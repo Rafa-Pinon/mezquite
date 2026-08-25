@@ -1,0 +1,24 @@
+.mezquite {
+ display: flex;
+ justify-content: center;
+ margin-top: 5%;
+}
+.mezquite img{
+width: 150%;
+}
+
+@media (max-width: 600px) {
+  .mezquite {
+ display: flex;
+ justify-content: center;
+ margin-top: 30%;
+}
+.mezquite img{
+width: 100%;
+}
+ }
+@media (max-width: 768px) {
+  .logo {
+    width: 120px;
+  }
+}
