@@ -1,0 +1,23 @@
+.btn-comidas {
+  width: auto;
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-comidas:hover {
+  background-color: #b91c2a;
+  transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+  .btn-comidas {
+    width: 180px;
+  }
+}

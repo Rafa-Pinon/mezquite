@@ -1,22 +1,36 @@
 import { useState } from "react";
 import "./App.css";
 import logo from "./assets/logosinfondo.png";
-import Home from "./components/home";
+import Home from "./components/menu";
+import Menubebidas from "./components/menubebidas";
 
 function App() {
   const [showHome, setShowHome] = useState(false);
+  const [showBebidas, setShowBebidas] = useState(false);
 
+  // ABRIR MENU DE COMIDAS
   const handleLogoClick = () => {
+    setShowHome(true);
+  };
+
+  // ABRIR MENU DE BEBIDAS
+  const handleBebidasClick = () => {
+    setShowBebidas(true);
+  };
+
+  // REGRESAR AL MENU DE COMIDAS
+  const handleComidasClick = () => {
+    setShowBebidas(false);
     setShowHome(true);
   };
 
   return (
     <div className="mezquite">
-      {showHome ? (
-        // 👇 Solo se muestra el componente Home
-        <Home />
+      {showBebidas ? (
+        <Menubebidas onComidasClick={handleComidasClick} />
+      ) : showHome ? (
+        <Home onBebidasClick={handleBebidasClick} />
       ) : (
-        // 👇 Pantalla inicial con el logo
         <div className="intro-section">
           <img
             src={logo}
@@ -25,8 +39,6 @@ function App() {
             onClick={handleLogoClick}
             style={{ cursor: "pointer" }}
           />
-
-          <p>Haz clic en el logo para entrar</p>
         </div>
       )}
     </div>
