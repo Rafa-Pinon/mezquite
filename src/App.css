@@ -1,34 +1,46 @@
 .mezquite {
- display: flex;
- justify-content: center;
- margin-top: 5%;
+  display: flex;
+  justify-content: center;
+  margin-top: 5%;
 }
-.mezquite img{
-width: 150%;
+
+.mezquite img {
+  width: 150%;
 }
 
 @media (max-width: 600px) {
   .mezquite {
- display: flex;
- justify-content: center;
- margin-top: 30%;
+    display: flex;
+    justify-content: center;
+    margin-top: 30%;
+  }
+
+  .mezquite img {
+    width: 100%;
+  }
 }
-.mezquite img{
-width: 100%;
-}
- }
+
 @media (max-width: 768px) {
   .logo {
     width: 120px;
   }
 }
-/* BOTON FLOTANTE CARRITO */
+
+/* ========================================
+   BOTON FLOTANTE CARRITO
+======================================== */
 
 .carrito-flotante {
   position: fixed;
 
+  /* DERECHA */
   right: 25px;
-  bottom: 25px;
+
+  /* CENTRADO VERTICALMENTE */
+  top: 50%;
+  bottom: auto;
+
+  transform: translateY(-50%);
 
   width: 65px;
   height: 65px;
@@ -46,10 +58,12 @@ width: 100%;
   z-index: 9000;
 
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+
+  transition: 0.3s;
 }
 
 .carrito-flotante:hover {
-  transform: scale(1.08);
+  transform: translateY(-50%) scale(1.08);
 }
 
 .contador-carrito {
@@ -74,7 +88,9 @@ width: 100%;
   font-weight: bold;
 }
 
-/* FONDO */
+/* ========================================
+   FONDO CARRITO
+======================================== */
 
 .carrito-fondo {
   position: fixed;
@@ -93,7 +109,9 @@ width: 100%;
   z-index: 10000;
 }
 
-/* PANEL */
+/* ========================================
+   PANEL CARRITO
+======================================== */
 
 .carrito-panel {
   position: relative;
@@ -113,6 +131,7 @@ width: 100%;
 
 .carrito-panel h2 {
   font-size: 30px;
+
   margin-top: 0;
   margin-bottom: 30px;
 }
@@ -135,7 +154,9 @@ width: 100%;
   cursor: pointer;
 }
 
-/* PRODUCTO */
+/* ========================================
+   PRODUCTO
+======================================== */
 
 .producto-carrito {
   border-bottom: 1px solid #ddd;
@@ -167,7 +188,9 @@ width: 100%;
   font-size: 14px;
 }
 
-/* CANTIDAD */
+/* ========================================
+   CANTIDAD
+======================================== */
 
 .cantidad-controles {
   display: flex;
@@ -200,10 +223,13 @@ width: 100%;
   font-size: 18px;
 }
 
-/* ELIMINAR */
+/* ========================================
+   ELIMINAR
+======================================== */
 
 .eliminar-producto {
   border: none;
+
   background: transparent;
 
   font-size: 20px;
@@ -211,7 +237,9 @@ width: 100%;
   cursor: pointer;
 }
 
-/* TOTAL */
+/* ========================================
+   TOTAL
+======================================== */
 
 .carrito-total {
   display: flex;
@@ -230,7 +258,48 @@ width: 100%;
   color: #e63946;
 }
 
-/* WHATSAPP */
+/* ========================================
+   AVISO DENTRO DEL CARRITO
+======================================== */
+
+.aviso-carrito {
+  margin-top: 20px;
+  margin-bottom: 5px;
+
+  padding: 18px;
+
+  background-color: #fff8e1;
+
+  border: 2px solid #f0b429;
+  border-radius: 14px;
+
+  text-align: left;
+}
+
+.aviso-carrito h3 {
+  margin: 0 0 12px;
+
+  font-size: 20px;
+
+  color: #d97706;
+}
+
+.aviso-carrito p {
+  margin: 9px 0;
+
+  font-size: 15px;
+  line-height: 1.5;
+
+  color: #333;
+}
+
+.aviso-carrito strong {
+  color: #222;
+}
+
+/* ========================================
+   BOTON WHATSAPP
+======================================== */
 
 .btn-whatsapp {
   width: 100%;
@@ -257,30 +326,21 @@ width: 100%;
 
 .carrito-vacio {
   text-align: center;
+
   margin-top: 80px;
 
   color: #777;
+
   font-size: 18px;
 }
 
-/* CELULAR */
-
-@media (max-width: 600px) {
-  .carrito-panel {
-    max-width: 100%;
-  }
-
-  .carrito-flotante {
-    right: 18px;
-    bottom: 18px;
-  }
-}
 /* ========================================
    AVISO ANTES DE FINALIZAR PEDIDO
 ======================================== */
 
 .aviso-fondo {
   position: fixed;
+
   top: 0;
   left: 0;
 
@@ -315,6 +375,7 @@ width: 100%;
 
 .aviso-icono {
   font-size: 60px;
+
   margin-bottom: 10px;
 }
 
@@ -329,11 +390,13 @@ width: 100%;
 
 .aviso-importante {
   font-size: 17px;
+
   color: #555;
 }
 
 .aviso-pedido h3 {
   font-size: 23px;
+
   color: #222;
 
   margin: 10px 0 25px;
@@ -360,7 +423,9 @@ width: 100%;
   color: #333;
 }
 
-/* BOTON CONTINUAR */
+/* ========================================
+   BOTON CONTINUAR
+======================================== */
 
 .btn-entendido {
   width: 100%;
@@ -385,7 +450,9 @@ width: 100%;
   opacity: 0.9;
 }
 
-/* REGRESAR */
+/* ========================================
+   REGRESAR
+======================================== */
 
 .btn-regresar-carrito {
   width: 100%;
@@ -393,6 +460,7 @@ width: 100%;
   padding: 13px;
 
   background-color: transparent;
+
   color: #555;
 
   border: none;
@@ -402,9 +470,29 @@ width: 100%;
   cursor: pointer;
 }
 
-/* CELULAR */
+/* ========================================
+   CELULAR
+======================================== */
 
 @media (max-width: 600px) {
+  .carrito-panel {
+    max-width: 100%;
+  }
+
+  /* CARRITO A LA DERECHA Y CENTRADO */
+  .carrito-flotante {
+    right: 18px;
+
+    top: 50%;
+    bottom: auto;
+
+    transform: translateY(-50%);
+  }
+
+  .carrito-flotante:hover {
+    transform: translateY(-50%) scale(1.08);
+  }
+
   .aviso-pedido {
     padding: 22px 18px;
   }
@@ -420,46 +508,7 @@ width: 100%;
   .aviso-pedido h3 {
     font-size: 20px;
   }
-}
-/* AVISO DENTRO DEL CARRITO */
 
-.aviso-carrito {
-  margin-top: 20px;
-  margin-bottom: 5px;
-
-  padding: 18px;
-
-  background-color: #fff8e1;
-
-  border: 2px solid #f0b429;
-  border-radius: 14px;
-
-  text-align: left;
-}
-
-.aviso-carrito h3 {
-  margin: 0 0 12px;
-
-  font-size: 20px;
-  color: #d97706;
-}
-
-.aviso-carrito p {
-  margin: 9px 0;
-
-  font-size: 15px;
-  line-height: 1.5;
-
-  color: #333;
-}
-
-.aviso-carrito strong {
-  color: #222;
-}
-
-/* CELULAR */
-
-@media (max-width: 600px) {
   .aviso-carrito {
     padding: 15px;
   }
