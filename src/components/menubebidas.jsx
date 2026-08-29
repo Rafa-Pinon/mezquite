@@ -1,7 +1,7 @@
 import React from "react";
 import "./menubebidas.css";
 
-const Menubebidas = ({ onComidasClick }) => {
+const Menubebidas = ({ onComidasClick, onAgregarCarrito }) => {
   return (
     <div className="menu-container">
       {/* ENCABEZADO */}
@@ -29,7 +29,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$45</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Limonada Natural",
+                  precio: 45,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -48,7 +58,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$55</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Jugo de Naranja",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -65,7 +85,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$70</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Smoothie de Fresa",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -82,7 +112,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$70</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Smoothie de Mango",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -99,7 +139,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$65</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Jugo Verde",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -116,7 +166,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$60</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Jugo de Zanahoria",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -133,7 +193,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$55</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Jugo de Piña",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -152,7 +222,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$40</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Agua de Jamaica",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -169,7 +249,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$45</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Agua de Pepino y Limón",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -186,7 +276,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$75</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Smoothie Frutos Rojos",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -203,7 +303,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$45</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Mineral con Limón",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -220,7 +330,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$50</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Té Verde Frío",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -237,7 +357,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$55</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Agua de Coco",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -254,7 +384,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$70</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Smoothie de Plátano",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -271,7 +411,17 @@ const Menubebidas = ({ onComidasClick }) => {
 
             <h4>$75</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Smoothie Tropical",
+                  precio: 55,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
       </div>

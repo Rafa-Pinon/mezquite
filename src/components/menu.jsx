@@ -1,7 +1,102 @@
-import React from "react";
+import React, { useState } from "react";
 import "./menu.css";
 
-const Home = ({ onBebidasClick }) => {
+const Home = ({ onBebidasClick, onAgregarCarrito }) => {
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+  const [ingredientesSeleccionados, setIngredientesSeleccionados] = useState(
+    [],
+  );
+
+  const hamburguesas = [
+    {
+      nombre: "Hamburguesa Clásica",
+      precio: 95,
+      imagen: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
+      descripcion: "Carne, queso, lechuga, tomate, cebolla y aderezo especial.",
+      ingredientes: [
+        "Carne",
+        "Queso",
+        "Lechuga",
+        "Tomate",
+        "Cebolla",
+        "Aderezo especial",
+      ],
+    },
+    {
+      nombre: "Hamburguesa Doble",
+      precio: 125,
+      imagen: "https://images.unsplash.com/photo-1550547660-d9450f859349",
+      descripcion: "Doble carne, doble queso, lechuga, tomate y cebolla.",
+      ingredientes: [
+        "Doble carne",
+        "Doble queso",
+        "Lechuga",
+        "Tomate",
+        "Cebolla",
+      ],
+    },
+    {
+      nombre: "Hamburguesa BBQ",
+      precio: 135,
+      imagen: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5",
+      descripcion: "Carne, queso, tocino, cebolla y deliciosa salsa BBQ.",
+      ingredientes: ["Carne", "Queso", "Tocino", "Cebolla", "Salsa BBQ"],
+    },
+    {
+      nombre: "Hamburguesa Especial",
+      precio: 145,
+      imagen: "https://images.unsplash.com/photo-1571091718767-18b5b1457add",
+      descripcion:
+        "Carne, queso, tocino, aguacate, jalapeño y aderezo de la casa.",
+      ingredientes: [
+        "Carne",
+        "Queso",
+        "Tocino",
+        "Aguacate",
+        "Jalapeño",
+        "Aderezo de la casa",
+      ],
+    },
+  ];
+
+  const abrirProducto = (producto) => {
+    setProductoSeleccionado(producto);
+
+    // Todos los ingredientes aparecen seleccionados al principio
+    setIngredientesSeleccionados(producto.ingredientes);
+  };
+
+  const cambiarIngrediente = (ingrediente) => {
+    if (ingredientesSeleccionados.includes(ingrediente)) {
+      setIngredientesSeleccionados(
+        ingredientesSeleccionados.filter((item) => item !== ingrediente),
+      );
+    } else {
+      setIngredientesSeleccionados([...ingredientesSeleccionados, ingrediente]);
+    }
+  };
+
+  const cerrarProducto = () => {
+    setProductoSeleccionado(null);
+  };
+
+  const ordenarProducto = () => {
+    const ingredientesQuitados = productoSeleccionado.ingredientes.filter(
+      (ingrediente) => !ingredientesSeleccionados.includes(ingrediente),
+    );
+
+    const productoParaCarrito = {
+      nombre: productoSeleccionado.nombre,
+      precio: productoSeleccionado.precio,
+      imagen: productoSeleccionado.imagen,
+      ingredientesQuitados: ingredientesQuitados,
+    };
+
+    onAgregarCarrito(productoParaCarrito);
+
+    setProductoSeleccionado(null);
+  };
+
   return (
     <div className="menu-container">
       <div className="menu-header">
@@ -13,78 +108,40 @@ const Home = ({ onBebidasClick }) => {
       </div>
 
       {/* HAMBURGUESAS */}
+
       <h2 className="section-title">🍔 Hamburguesas</h2>
 
       <div className="cards-container">
-        <div className="food-card">
-          <img
-            src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
-            alt="Hamburguesa clásica"
-          />
+        {hamburguesas.map((hamburguesa, index) => (
+          <div
+            className="food-card hamburguesa-card"
+            key={index}
+            onClick={() => abrirProducto(hamburguesa)}
+          >
+            <img src={hamburguesa.imagen} alt={hamburguesa.nombre} />
 
-          <div className="food-info">
-            <h3>Hamburguesa Clásica</h3>
-            <p>Carne, queso, lechuga, tomate, cebolla y aderezo especial.</p>
+            <div className="food-info">
+              <h3>{hamburguesa.nombre}</h3>
 
-            <h4>$95</h4>
+              <p>{hamburguesa.descripcion}</p>
 
-            <button>Ordenar</button>
+              <h4>${hamburguesa.precio}</h4>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  abrirProducto(hamburguesa);
+                }}
+              >
+                Ordenar
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="food-card">
-          <img
-            src="https://images.unsplash.com/photo-1550547660-d9450f859349"
-            alt="Hamburguesa doble"
-          />
-
-          <div className="food-info">
-            <h3>Hamburguesa Doble</h3>
-            <p>Doble carne, doble queso, lechuga, tomate y cebolla.</p>
-
-            <h4>$125</h4>
-
-            <button>Ordenar</button>
-          </div>
-        </div>
-
-        <div className="food-card">
-          <img
-            src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5"
-            alt="Hamburguesa BBQ"
-          />
-
-          <div className="food-info">
-            <h3>Hamburguesa BBQ</h3>
-            <p>Carne, queso, tocino, cebolla y deliciosa salsa BBQ.</p>
-
-            <h4>$135</h4>
-
-            <button>Ordenar</button>
-          </div>
-        </div>
-
-        <div className="food-card">
-          <img
-            src="https://images.unsplash.com/photo-1571091718767-18b5b1457add"
-            alt="Hamburguesa especial"
-          />
-
-          <div className="food-info">
-            <h3>Hamburguesa Especial</h3>
-
-            <p>
-              Carne, queso, tocino, aguacate, jalapeño y aderezo de la casa.
-            </p>
-
-            <h4>$145</h4>
-
-            <button>Ordenar</button>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* ALITAS */}
+
       <h2 className="section-title wings-title">🔥 Alitas</h2>
 
       <div className="cards-container">
@@ -101,7 +158,17 @@ const Home = ({ onBebidasClick }) => {
 
             <h4>$110</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Alitas BBQ",
+                  precio: 110,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -118,7 +185,17 @@ const Home = ({ onBebidasClick }) => {
 
             <h4>$115</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Alitas Buffalo",
+                  precio: 115,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -135,7 +212,17 @@ const Home = ({ onBebidasClick }) => {
 
             <h4>$120</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Mango Habanero",
+                  precio: 120,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
 
@@ -152,10 +239,64 @@ const Home = ({ onBebidasClick }) => {
 
             <h4>$120</h4>
 
-            <button>Ordenar</button>
+            <button
+              onClick={() =>
+                onAgregarCarrito({
+                  nombre: "Lemon Pepper",
+                  precio: 120,
+                  ingredientesQuitados: [],
+                })
+              }
+            >
+              Ordenar
+            </button>
           </div>
         </div>
       </div>
+
+      {/* VENTANA PARA PERSONALIZAR HAMBURGUESA */}
+
+      {productoSeleccionado && (
+        <div className="modal-fondo" onClick={cerrarProducto}>
+          <div className="modal-producto" onClick={(e) => e.stopPropagation()}>
+            <button className="cerrar-modal" onClick={cerrarProducto}>
+              ✕
+            </button>
+
+            <img
+              className="modal-imagen"
+              src={productoSeleccionado.imagen}
+              alt={productoSeleccionado.nombre}
+            />
+
+            <h2>{productoSeleccionado.nombre}</h2>
+
+            <h3 className="modal-precio">${productoSeleccionado.precio}</h3>
+
+            <p className="modal-instruccion">
+              Quita la palomita de los ingredientes que no deseas:
+            </p>
+
+            <div className="lista-ingredientes">
+              {productoSeleccionado.ingredientes.map((ingrediente, index) => (
+                <label className="ingrediente-item" key={index}>
+                  <input
+                    type="checkbox"
+                    checked={ingredientesSeleccionados.includes(ingrediente)}
+                    onChange={() => cambiarIngrediente(ingrediente)}
+                  />
+
+                  <span>{ingrediente}</span>
+                </label>
+              ))}
+            </div>
+
+            <button className="btn-confirmar-pedido" onClick={ordenarProducto}>
+              Agregar al pedido
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
