@@ -211,7 +211,7 @@ function App() {
     }
 
     // CAMBIA ESTE NUMERO POR EL WHATSAPP REAL
-    const numeroWhatsApp = "526361234567";
+    const numeroWhatsApp = "526361011255";
 
     let mensaje = "🍔 *NUEVO PEDIDO - MEZQUITE* 🍔\n\n";
 
