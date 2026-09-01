@@ -11,15 +11,24 @@ function App() {
   // CARRITO
   const [carrito, setCarrito] = useState([]);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
-  const [mostrarAvisoPedido, setMostrarAvisoPedido] = useState(false);
+
+  // ANIMACION DEL PRODUCTO HACIA EL CARRITO
+  const [animacionCarrito, setAnimacionCarrito] = useState(null);
+
+  // ANIMACION DEL ICONO DEL CARRITO
+  const [carritoAnimado, setCarritoAnimado] = useState(false);
+
+  // ABRIR MENU DE COMIDAS
   const handleLogoClick = () => {
     setShowHome(true);
   };
 
+  // ABRIR MENU DE BEBIDAS
   const handleBebidasClick = () => {
     setShowBebidas(true);
   };
 
+  // REGRESAR AL MENU DE COMIDAS
   const handleComidasClick = () => {
     setShowBebidas(false);
     setShowHome(true);
@@ -55,6 +64,24 @@ function App() {
         },
       ];
     });
+
+    // INICIA ANIMACION DEL PRODUCTO
+    setAnimacionCarrito({
+      imagen: producto.imagen,
+      nombre: producto.nombre,
+    });
+
+    // HACE BRINCAR EL CARRITO
+    setCarritoAnimado(true);
+
+    setTimeout(() => {
+      setCarritoAnimado(false);
+    }, 600);
+
+    // TERMINA ANIMACION DEL PRODUCTO
+    setTimeout(() => {
+      setAnimacionCarrito(null);
+    }, 900);
   };
 
   // AUMENTAR CANTIDAD
@@ -62,7 +89,10 @@ function App() {
     setCarrito((carritoActual) =>
       carritoActual.map((item) =>
         item.idProducto === idProducto
-          ? { ...item, cantidad: item.cantidad + 1 }
+          ? {
+              ...item,
+              cantidad: item.cantidad + 1,
+            }
           : item,
       ),
     );
@@ -74,7 +104,10 @@ function App() {
       carritoActual
         .map((item) =>
           item.idProducto === idProducto
-            ? { ...item, cantidad: item.cantidad - 1 }
+            ? {
+                ...item,
+                cantidad: item.cantidad - 1,
+              }
             : item,
         )
         .filter((item) => item.cantidad > 0),
@@ -88,13 +121,13 @@ function App() {
     );
   };
 
-  // TOTAL
+  // CALCULAR TOTAL
   const total = carrito.reduce(
     (suma, item) => suma + item.precio * item.cantidad,
     0,
   );
 
-  // TOTAL DE PRODUCTOS
+  // CONTADOR TOTAL DE PRODUCTOS
   const cantidadProductos = carrito.reduce(
     (suma, item) => suma + item.cantidad,
     0,
@@ -107,38 +140,52 @@ function App() {
       return;
     }
 
-    // CAMBIA ESTE NUMERO POR EL NUMERO DE TU NEGOCIO
-    // México: 52 + número de 10 dígitos
-    const numeroWhatsApp = "526361011255";
+    // CAMBIA ESTE NUMERO POR EL WHATSAPP DE TU NEGOCIO
+    const numeroWhatsApp = "526361234567";
 
-    let mensaje = "🍔 *NUEVO PEDIDO* 🍔\n\n";
+    let mensaje = "🍔 *NUEVO PEDIDO - MEZQUITE* 🍔\n\n";
 
     carrito.forEach((item) => {
-      mensaje += `*${item.cantidad} x ${item.nombre}*\n`;
-      mensaje += `Precio: $${item.precio}\n`;
+      mensaje += "*" + item.cantidad + " x " + item.nombre + "*\n";
+      mensaje += "Precio: $" + item.precio + "\n";
 
       if (item.ingredientesQuitados && item.ingredientesQuitados.length > 0) {
-        mensaje += `❌ Sin: ${item.ingredientesQuitados.join(", ")}\n`;
+        mensaje += "❌ Sin: " + item.ingredientesQuitados.join(", ") + "\n";
       }
 
-      mensaje += `Subtotal: $${item.precio * item.cantidad}\n\n`;
+      mensaje += "Subtotal: $" + item.precio * item.cantidad + "\n\n";
     });
 
-    mensaje += `💰 *TOTAL: $${total}*`;
+    mensaje += "💰 *TOTAL: $" + total + "*\n\n";
+
+    mensaje += "⏰ *IMPORTANTE*\n";
+    mensaje += "Tu pedido estará listo en aproximadamente 1 hora.\n\n";
+
+    mensaje += "🏪 Puedes recogerlo en Tienda Abarrotes Angostura.\n\n";
+
+    mensaje += "💵💳 Puedes pagar en efectivo o con tarjeta.\n\n";
+
+    mensaje += "🛵 Si deseas servicio a domicilio, se agregará costo de envío.";
 
     const url =
-      `https://wa.me/${numeroWhatsApp}?text=` + encodeURIComponent(mensaje);
+      "https://wa.me/" +
+      numeroWhatsApp +
+      "?text=" +
+      encodeURIComponent(mensaje);
 
     window.open(url, "_blank");
   };
-
   return (
     <div className="mezquite">
-      {/* BOTON FLOTANTE DEL CARRITO */}
+      {/* =====================================
+          BOTON FLOTANTE DEL CARRITO
+      ====================================== */}
 
       {showHome && (
         <button
-          className="carrito-flotante"
+          className={`carrito-flotante ${
+            carritoAnimado ? "carrito-recibe" : ""
+          }`}
           onClick={() => setMostrarCarrito(true)}
         >
           🛒
@@ -146,7 +193,23 @@ function App() {
         </button>
       )}
 
-      {/* PANTALLAS */}
+      {/* =====================================
+          PRODUCTO VOLANDO HACIA EL CARRITO
+      ====================================== */}
+
+      {animacionCarrito && (
+        <div className="producto-volando">
+          {animacionCarrito.imagen ? (
+            <img src={animacionCarrito.imagen} alt={animacionCarrito.nombre} />
+          ) : (
+            <span>🍔</span>
+          )}
+        </div>
+      )}
+
+      {/* =====================================
+          PANTALLAS
+      ====================================== */}
 
       {showBebidas ? (
         <Menubebidas
@@ -165,16 +228,22 @@ function App() {
             alt="Logo Mezquite"
             className="logo"
             onClick={handleLogoClick}
-            style={{ cursor: "pointer" }}
+            style={{
+              cursor: "pointer",
+            }}
           />
         </div>
       )}
 
-      {/* CARRITO */}
+      {/* =====================================
+          CARRITO
+      ====================================== */}
 
       {mostrarCarrito && (
         <div className="carrito-fondo" onClick={() => setMostrarCarrito(false)}>
           <div className="carrito-panel" onClick={(e) => e.stopPropagation()}>
+            {/* CERRAR CARRITO */}
+
             <button
               className="cerrar-carrito"
               onClick={() => setMostrarCarrito(false)}
@@ -184,13 +253,19 @@ function App() {
 
             <h2>🛒 Tu Pedido</h2>
 
+            {/* CARRITO VACIO */}
+
             {carrito.length === 0 ? (
               <p className="carrito-vacio">Tu carrito está vacío</p>
             ) : (
               <>
+                {/* PRODUCTOS */}
+
                 <div className="productos-carrito">
                   {carrito.map((item) => (
                     <div className="producto-carrito" key={item.idProducto}>
+                      {/* INFORMACION */}
+
                       <div className="producto-carrito-info">
                         <h3>{item.nombre}</h3>
 
@@ -203,6 +278,8 @@ function App() {
                             </p>
                           )}
                       </div>
+
+                      {/* CANTIDADES */}
 
                       <div className="cantidad-controles">
                         <button
@@ -220,9 +297,13 @@ function App() {
                         </button>
                       </div>
 
+                      {/* SUBTOTAL */}
+
                       <strong className="subtotal-producto">
                         ${item.precio * item.cantidad}
                       </strong>
+
+                      {/* ELIMINAR */}
 
                       <button
                         className="eliminar-producto"
@@ -234,12 +315,15 @@ function App() {
                   ))}
                 </div>
 
+                {/* TOTAL */}
+
                 <div className="carrito-total">
                   <span>Total</span>
+
                   <strong>${total}</strong>
                 </div>
 
-                {/* INFORMACION IMPORTANTE DEL PEDIDO */}
+                {/* AVISO IMPORTANTE */}
 
                 <div className="aviso-carrito">
                   <h3>⏰ ¡Importante!</h3>
@@ -255,7 +339,7 @@ function App() {
                   </p>
 
                   <p>
-                    💵💳 Puedes pagar en <strong>efectivo o con tarjeta</strong>
+                    💵💳 Puedes pagar en <strong>efectivo o con tarjeta</strong>{" "}
                     al recoger tu pedido.
                   </p>
 
@@ -265,58 +349,13 @@ function App() {
                   </p>
                 </div>
 
+                {/* FINALIZAR PEDIDO */}
+
                 <button className="btn-whatsapp" onClick={enviarWhatsApp}>
                   📱 Finalizar pedido
                 </button>
               </>
             )}
-          </div>
-        </div>
-      )}
-      {mostrarAvisoPedido && (
-        <div className="aviso-fondo">
-          <div className="aviso-pedido">
-            <div className="aviso-icono">⏰</div>
-
-            <h2>¡TU PEDIDO ESTARÁ LISTO EN 1 HORA!</h2>
-
-            <p className="aviso-importante">
-              Puedes pasar a recoger tu pedido en:
-            </p>
-
-            <h3>🏪 Tienda Abarrotes Angostura</h3>
-
-            <div className="aviso-detalles">
-              <p>
-                💵 Puedes pagar en <strong>efectivo</strong>
-              </p>
-
-              <p>
-                💳 También aceptamos pago con <strong>tarjeta</strong>
-              </p>
-
-              <p>
-                🛵 Si deseas tu pedido a domicilio, se agregará un
-                <strong> costo de envío</strong>.
-              </p>
-            </div>
-
-            <button
-              className="btn-entendido"
-              onClick={() => {
-                setMostrarAvisoPedido(false);
-                enviarWhatsApp();
-              }}
-            >
-              ✓ Entendido, continuar con mi pedido
-            </button>
-
-            <button
-              className="btn-regresar-carrito"
-              onClick={() => setMostrarAvisoPedido(false)}
-            >
-              ← Regresar al carrito
-            </button>
           </div>
         </div>
       )}
