@@ -12,29 +12,37 @@ function App() {
   const [carrito, setCarrito] = useState([]);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
 
-  // ANIMACION DEL PRODUCTO HACIA EL CARRITO
+  // ANIMACIONES
   const [animacionCarrito, setAnimacionCarrito] = useState(null);
-
-  // ANIMACION DEL ICONO DEL CARRITO
   const [carritoAnimado, setCarritoAnimado] = useState(false);
 
-  // ABRIR MENU DE COMIDAS
+  // DATOS DEL CLIENTE
+  const [nombreCliente, setNombreCliente] = useState("");
+
+  // "recoger" o "domicilio"
+  const [tipoEntrega, setTipoEntrega] = useState("recoger");
+
+  const [direccion, setDireccion] = useState("");
+  const [ubicacion, setUbicacion] = useState("");
+  const [obteniendoUbicacion, setObteniendoUbicacion] = useState(false);
+
+  // ABRIR MENU
   const handleLogoClick = () => {
     setShowHome(true);
   };
 
-  // ABRIR MENU DE BEBIDAS
+  // BEBIDAS
   const handleBebidasClick = () => {
     setShowBebidas(true);
   };
 
-  // REGRESAR AL MENU DE COMIDAS
+  // COMIDAS
   const handleComidasClick = () => {
     setShowBebidas(false);
     setShowHome(true);
   };
 
-  // AGREGAR PRODUCTO AL CARRITO
+  // AGREGAR AL CARRITO
   const agregarAlCarrito = (producto) => {
     const idProducto =
       producto.nombre + JSON.stringify(producto.ingredientesQuitados || []);
@@ -65,26 +73,25 @@ function App() {
       ];
     });
 
-    // INICIA ANIMACION DEL PRODUCTO
+    // PRODUCTO VOLANDO
     setAnimacionCarrito({
       imagen: producto.imagen,
       nombre: producto.nombre,
     });
 
-    // HACE BRINCAR EL CARRITO
+    // CARRITO BRINCA
     setCarritoAnimado(true);
 
     setTimeout(() => {
       setCarritoAnimado(false);
     }, 600);
 
-    // TERMINA ANIMACION DEL PRODUCTO
     setTimeout(() => {
       setAnimacionCarrito(null);
     }, 900);
   };
 
-  // AUMENTAR CANTIDAD
+  // AUMENTAR
   const aumentarCantidad = (idProducto) => {
     setCarrito((carritoActual) =>
       carritoActual.map((item) =>
@@ -98,7 +105,7 @@ function App() {
     );
   };
 
-  // DISMINUIR CANTIDAD
+  // DISMINUIR
   const disminuirCantidad = (idProducto) => {
     setCarrito((carritoActual) =>
       carritoActual
@@ -114,39 +121,132 @@ function App() {
     );
   };
 
-  // ELIMINAR PRODUCTO
+  // ELIMINAR
   const eliminarProducto = (idProducto) => {
     setCarrito((carritoActual) =>
       carritoActual.filter((item) => item.idProducto !== idProducto),
     );
   };
 
-  // CALCULAR TOTAL
+  // TOTAL
   const total = carrito.reduce(
     (suma, item) => suma + item.precio * item.cantidad,
     0,
   );
 
-  // CONTADOR TOTAL DE PRODUCTOS
+  // CANTIDAD TOTAL
   const cantidadProductos = carrito.reduce(
     (suma, item) => suma + item.cantidad,
     0,
   );
 
+  // =========================================
+  // OBTENER UBICACION ACTUAL
+  // =========================================
+
+  const obtenerUbicacionActual = () => {
+    if (!navigator.geolocation) {
+      alert("Tu dispositivo no permite obtener la ubicación.");
+      return;
+    }
+
+    setObteniendoUbicacion(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitud = position.coords.latitude;
+
+        const longitud = position.coords.longitude;
+
+        const enlaceMaps =
+          "https://www.google.com/maps?q=" + latitud + "," + longitud;
+
+        setUbicacion(enlaceMaps);
+
+        setObteniendoUbicacion(false);
+      },
+
+      (error) => {
+        console.log(error);
+
+        setObteniendoUbicacion(false);
+
+        alert(
+          "No se pudo obtener tu ubicación. Revisa que tengas activado el GPS y permite el acceso a la ubicación.",
+        );
+      },
+
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      },
+    );
+  };
+
+  // =========================================
   // ENVIAR PEDIDO POR WHATSAPP
+  // =========================================
+
   const enviarWhatsApp = () => {
     if (carrito.length === 0) {
       alert("Tu carrito está vacío");
       return;
     }
 
-    // CAMBIA ESTE NUMERO POR EL WHATSAPP DE TU NEGOCIO
+    if (nombreCliente.trim() === "") {
+      alert("Por favor escribe tu nombre completo.");
+      return;
+    }
+
+    if (
+      tipoEntrega === "domicilio" &&
+      direccion.trim() === "" &&
+      ubicacion === ""
+    ) {
+      alert(
+        "Para envío a domicilio escribe tu dirección o comparte tu ubicación actual.",
+      );
+      return;
+    }
+
+    // CAMBIA ESTE NUMERO POR EL WHATSAPP REAL
     const numeroWhatsApp = "526361234567";
 
     let mensaje = "🍔 *NUEVO PEDIDO - MEZQUITE* 🍔\n\n";
 
+    // CLIENTE
+    mensaje += "👤 *CLIENTE*\n";
+
+    mensaje += nombreCliente.trim() + "\n\n";
+
+    // TIPO DE ENTREGA
+    mensaje += "📦 *TIPO DE ENTREGA*\n";
+
+    if (tipoEntrega === "recoger") {
+      mensaje += "🏪 Recoger en Tienda Abarrotes Angostura\n\n";
+    }
+
+    if (tipoEntrega === "domicilio") {
+      mensaje += "🛵 Envío a domicilio\n";
+
+      if (direccion.trim() !== "") {
+        mensaje += "🏠 Dirección: " + direccion.trim() + "\n";
+      }
+
+      if (ubicacion !== "") {
+        mensaje += "📍 Ubicación:\n" + ubicacion + "\n";
+      }
+
+      mensaje += "\n";
+    }
+
+    // PRODUCTOS
+    mensaje += "🛒 *PEDIDO*\n\n";
+
     carrito.forEach((item) => {
       mensaje += "*" + item.cantidad + " x " + item.nombre + "*\n";
+
       mensaje += "Precio: $" + item.precio + "\n";
 
       if (item.ingredientesQuitados && item.ingredientesQuitados.length > 0) {
@@ -156,16 +256,23 @@ function App() {
       mensaje += "Subtotal: $" + item.precio * item.cantidad + "\n\n";
     });
 
+    // TOTAL
     mensaje += "💰 *TOTAL: $" + total + "*\n\n";
 
-    mensaje += "⏰ *IMPORTANTE*\n";
-    mensaje += "Tu pedido estará listo en aproximadamente 1 hora.\n\n";
+    // INFORMACION
+    mensaje += "⏰ *INFORMACIÓN*\n";
 
-    mensaje += "🏪 Puedes recogerlo en Tienda Abarrotes Angostura.\n\n";
+    mensaje += "Tu pedido estará listo en aproximadamente 1 hora.\n";
 
-    mensaje += "💵💳 Puedes pagar en efectivo o con tarjeta.\n\n";
+    if (tipoEntrega === "recoger") {
+      mensaje += "🏪 Recoger en Tienda Abarrotes Angostura.\n";
 
-    mensaje += "🛵 Si deseas servicio a domicilio, se agregará costo de envío.";
+      mensaje += "💵💳 Pago en efectivo o con tarjeta.";
+    }
+
+    if (tipoEntrega === "domicilio") {
+      mensaje += "🛵 El servicio a domicilio tendrá un costo de envío.";
+    }
 
     const url =
       "https://wa.me/" +
@@ -175,11 +282,10 @@ function App() {
 
     window.open(url, "_blank");
   };
+
   return (
     <div className="mezquite">
-      {/* =====================================
-          BOTON FLOTANTE DEL CARRITO
-      ====================================== */}
+      {/* CARRITO FLOTANTE */}
 
       {showHome && (
         <button
@@ -193,9 +299,7 @@ function App() {
         </button>
       )}
 
-      {/* =====================================
-          PRODUCTO VOLANDO HACIA EL CARRITO
-      ====================================== */}
+      {/* PRODUCTO VOLANDO */}
 
       {animacionCarrito && (
         <div className="producto-volando">
@@ -207,9 +311,7 @@ function App() {
         </div>
       )}
 
-      {/* =====================================
-          PANTALLAS
-      ====================================== */}
+      {/* PANTALLAS */}
 
       {showBebidas ? (
         <Menubebidas
@@ -235,15 +337,11 @@ function App() {
         </div>
       )}
 
-      {/* =====================================
-          CARRITO
-      ====================================== */}
+      {/* CARRITO */}
 
       {mostrarCarrito && (
         <div className="carrito-fondo" onClick={() => setMostrarCarrito(false)}>
           <div className="carrito-panel" onClick={(e) => e.stopPropagation()}>
-            {/* CERRAR CARRITO */}
-
             <button
               className="cerrar-carrito"
               onClick={() => setMostrarCarrito(false)}
@@ -252,8 +350,6 @@ function App() {
             </button>
 
             <h2>🛒 Tu Pedido</h2>
-
-            {/* CARRITO VACIO */}
 
             {carrito.length === 0 ? (
               <p className="carrito-vacio">Tu carrito está vacío</p>
@@ -264,8 +360,6 @@ function App() {
                 <div className="productos-carrito">
                   {carrito.map((item) => (
                     <div className="producto-carrito" key={item.idProducto}>
-                      {/* INFORMACION */}
-
                       <div className="producto-carrito-info">
                         <h3>{item.nombre}</h3>
 
@@ -279,7 +373,7 @@ function App() {
                           )}
                       </div>
 
-                      {/* CANTIDADES */}
+                      {/* CANTIDAD */}
 
                       <div className="cantidad-controles">
                         <button
@@ -297,13 +391,9 @@ function App() {
                         </button>
                       </div>
 
-                      {/* SUBTOTAL */}
-
                       <strong className="subtotal-producto">
                         ${item.precio * item.cantidad}
                       </strong>
-
-                      {/* ELIMINAR */}
 
                       <button
                         className="eliminar-producto"
@@ -323,7 +413,95 @@ function App() {
                   <strong>${total}</strong>
                 </div>
 
-                {/* AVISO IMPORTANTE */}
+                {/* ==================================
+                    DATOS DEL CLIENTE
+                =================================== */}
+
+                <div className="datos-cliente">
+                  <h3>👤 Datos para finalizar tu pedido</h3>
+
+                  <label>Nombre completo</label>
+
+                  <input
+                    type="text"
+                    placeholder="Escribe tu nombre completo"
+                    value={nombreCliente}
+                    onChange={(e) => setNombreCliente(e.target.value)}
+                  />
+
+                  {/* ENTREGA */}
+
+                  <h4>¿Cómo deseas recibir tu pedido?</h4>
+
+                  <div className="opciones-entrega">
+                    <button
+                      type="button"
+                      className={
+                        tipoEntrega === "recoger"
+                          ? "opcion-entrega activa"
+                          : "opcion-entrega"
+                      }
+                      onClick={() => setTipoEntrega("recoger")}
+                    >
+                      🏪 Recoger en tienda
+                    </button>
+
+                    <button
+                      type="button"
+                      className={
+                        tipoEntrega === "domicilio"
+                          ? "opcion-entrega activa"
+                          : "opcion-entrega"
+                      }
+                      onClick={() => setTipoEntrega("domicilio")}
+                    >
+                      🛵 Envío a domicilio
+                    </button>
+                  </div>
+
+                  {/* DATOS DE DOMICILIO */}
+
+                  {tipoEntrega === "domicilio" && (
+                    <div className="datos-domicilio">
+                      <label>Dirección de entrega</label>
+
+                      <textarea
+                        placeholder="Ejemplo: Calle, número, colonia, referencias..."
+                        value={direccion}
+                        onChange={(e) => setDireccion(e.target.value)}
+                      />
+
+                      <div className="separador-ubicacion">
+                        <span>O</span>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="btn-ubicacion"
+                        onClick={obtenerUbicacionActual}
+                      >
+                        {obteniendoUbicacion
+                          ? "📍 Obteniendo ubicación..."
+                          : ubicacion
+                            ? "✅ Ubicación agregada"
+                            : "📍 Usar mi ubicación actual"}
+                      </button>
+
+                      {ubicacion && (
+                        <p className="ubicacion-correcta">
+                          ✅ Tu ubicación se enviará junto con el pedido.
+                        </p>
+                      )}
+
+                      <p className="costo-envio">
+                        🛵 El servicio a domicilio tendrá un costo adicional de
+                        envío.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* AVISO */}
 
                 <div className="aviso-carrito">
                   <h3>⏰ ¡Importante!</h3>
@@ -333,23 +511,30 @@ function App() {
                     <strong> 1 hora.</strong>
                   </p>
 
-                  <p>
-                    🏪 Puedes pasar a recogerlo en
-                    <strong> Tienda Abarrotes Angostura.</strong>
-                  </p>
+                  {tipoEntrega === "recoger" && (
+                    <>
+                      <p>
+                        🏪 Puedes pasar a recogerlo en
+                        <strong> Tienda Abarrotes Angostura.</strong>
+                      </p>
 
-                  <p>
-                    💵💳 Puedes pagar en <strong>efectivo o con tarjeta</strong>{" "}
-                    al recoger tu pedido.
-                  </p>
+                      <p>
+                        💵💳 Puedes pagar en{" "}
+                        <strong>efectivo o con tarjeta</strong> al recoger tu
+                        pedido.
+                      </p>
+                    </>
+                  )}
 
-                  <p>
-                    🛵 Si deseas <strong>servicio a domicilio</strong>, se
-                    agregará un costo de envío.
-                  </p>
+                  {tipoEntrega === "domicilio" && (
+                    <p>
+                      🛵 El servicio a domicilio tendrá un{" "}
+                      <strong>costo adicional de envío.</strong>
+                    </p>
+                  )}
                 </div>
 
-                {/* FINALIZAR PEDIDO */}
+                {/* FINALIZAR */}
 
                 <button className="btn-whatsapp" onClick={enviarWhatsApp}>
                   📱 Finalizar pedido

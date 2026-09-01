@@ -621,3 +621,204 @@
     transform: translateY(-50%) scale(1);
   }
 }
+/* ========================================
+   DATOS DEL CLIENTE
+======================================== */
+
+.datos-cliente {
+  margin-top: 25px;
+
+  padding: 20px;
+
+  background-color: #f7f7f7;
+
+  border-radius: 15px;
+
+  border: 1px solid #ddd;
+}
+
+.datos-cliente h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+
+  font-size: 21px;
+  color: #222;
+}
+
+.datos-cliente h4 {
+  margin-top: 25px;
+  margin-bottom: 15px;
+
+  font-size: 17px;
+}
+
+.datos-cliente label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-weight: bold;
+
+  color: #333;
+}
+
+.datos-cliente input,
+.datos-cliente textarea {
+  width: 100%;
+
+  padding: 14px;
+
+  border: 1px solid #ccc;
+
+  border-radius: 10px;
+
+  font-size: 16px;
+
+  background-color: white;
+}
+
+.datos-cliente input:focus,
+.datos-cliente textarea:focus {
+  outline: none;
+
+  border-color: #e63946;
+}
+
+.datos-cliente textarea {
+  min-height: 100px;
+
+  resize: vertical;
+}
+
+/* ========================================
+   TIPO DE ENTREGA
+======================================== */
+
+.opciones-entrega {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 10px;
+}
+
+.opcion-entrega {
+  padding: 15px 10px;
+
+  border: 2px solid #ddd;
+
+  border-radius: 12px;
+
+  background-color: white;
+
+  font-size: 15px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.opcion-entrega:hover {
+  border-color: #e63946;
+}
+
+.opcion-entrega.activa {
+  background-color: #e63946;
+
+  border-color: #e63946;
+
+  color: white;
+}
+
+/* ========================================
+   DOMICILIO
+======================================== */
+
+.datos-domicilio {
+  margin-top: 20px;
+
+  padding-top: 20px;
+
+  border-top: 1px solid #ddd;
+}
+
+.separador-ubicacion {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin: 15px 0;
+
+  color: #777;
+
+  font-weight: bold;
+}
+
+.btn-ubicacion {
+  width: 100%;
+
+  padding: 15px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background-color: #4285f4;
+
+  color: white;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+.btn-ubicacion:hover {
+  opacity: 0.9;
+}
+
+.ubicacion-correcta {
+  padding: 10px;
+
+  margin-top: 10px;
+
+  border-radius: 8px;
+
+  background-color: #e7f7ec;
+
+  color: #16803c;
+
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.costo-envio {
+  margin-top: 15px;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  background-color: #fff8e1;
+
+  font-size: 14px;
+
+  color: #444;
+}
+
+/* ========================================
+   CELULAR
+======================================== */
+
+@media (max-width: 600px) {
+  .opciones-entrega {
+    grid-template-columns: 1fr;
+  }
+
+  .datos-cliente {
+    padding: 15px;
+  }
+}
