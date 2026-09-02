@@ -1,48 +1,108 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import logo from "./assets/logosinfondo.png";
 import Home from "./components/menu";
 import Menubebidas from "./components/menubebidas";
 
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "./firebase";
+
 function App() {
   const [showHome, setShowHome] = useState(false);
   const [showBebidas, setShowBebidas] = useState(false);
 
+  // =========================================
   // CARRITO
+  // =========================================
+
   const [carrito, setCarrito] = useState([]);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
 
+  // =========================================
   // ANIMACIONES
+  // =========================================
+
   const [animacionCarrito, setAnimacionCarrito] = useState(null);
   const [carritoAnimado, setCarritoAnimado] = useState(false);
 
+  // =========================================
   // DATOS DEL CLIENTE
-  const [nombreCliente, setNombreCliente] = useState("");
+  // =========================================
 
-  // "recoger" o "domicilio"
+  const [nombreCliente, setNombreCliente] = useState("");
   const [tipoEntrega, setTipoEntrega] = useState("recoger");
 
   const [direccion, setDireccion] = useState("");
   const [ubicacion, setUbicacion] = useState("");
   const [obteniendoUbicacion, setObteniendoUbicacion] = useState(false);
 
-  // ABRIR MENU
+  // =========================================
+  // FORMA DE PAGO
+  // =========================================
+
+  const [formaPago, setFormaPago] = useState("efectivo");
+
+  // =========================================
+  // COSTO DE ENVÍO DESDE FIREBASE
+  // =========================================
+
+  const [costoEnvio, setCostoEnvio] = useState(0);
+
+  useEffect(() => {
+    const referenciaConfiguracion = doc(db, "configuracion", "negocio");
+
+    const cancelarSuscripcion = onSnapshot(
+      referenciaConfiguracion,
+      (documento) => {
+        if (documento.exists()) {
+          const datos = documento.data();
+
+          const costo = Number(datos.costoEnvio);
+
+          setCostoEnvio(Number.isFinite(costo) ? costo : 0);
+        } else {
+          setCostoEnvio(0);
+        }
+      },
+      (error) => {
+        console.error("Error al leer costo de envío:", error);
+
+        setCostoEnvio(0);
+      },
+    );
+
+    return () => cancelarSuscripcion();
+  }, []);
+
+  // =========================================
+  // ABRIR MENÚ
+  // =========================================
+
   const handleLogoClick = () => {
     setShowHome(true);
   };
 
+  // =========================================
   // BEBIDAS
+  // =========================================
+
   const handleBebidasClick = () => {
     setShowBebidas(true);
   };
 
+  // =========================================
   // COMIDAS
+  // =========================================
+
   const handleComidasClick = () => {
     setShowBebidas(false);
     setShowHome(true);
   };
 
+  // =========================================
   // AGREGAR AL CARRITO
+  // =========================================
+
   const agregarAlCarrito = (producto) => {
     const idProducto =
       producto.nombre + JSON.stringify(producto.ingredientesQuitados || []);
@@ -91,7 +151,10 @@ function App() {
     }, 900);
   };
 
-  // AUMENTAR
+  // =========================================
+  // AUMENTAR CANTIDAD
+  // =========================================
+
   const aumentarCantidad = (idProducto) => {
     setCarrito((carritoActual) =>
       carritoActual.map((item) =>
@@ -105,7 +168,10 @@ function App() {
     );
   };
 
-  // DISMINUIR
+  // =========================================
+  // DISMINUIR CANTIDAD
+  // =========================================
+
   const disminuirCantidad = (idProducto) => {
     setCarrito((carritoActual) =>
       carritoActual
@@ -121,27 +187,48 @@ function App() {
     );
   };
 
-  // ELIMINAR
+  // =========================================
+  // ELIMINAR PRODUCTO
+  // =========================================
+
   const eliminarProducto = (idProducto) => {
     setCarrito((carritoActual) =>
       carritoActual.filter((item) => item.idProducto !== idProducto),
     );
   };
 
-  // TOTAL
-  const total = carrito.reduce(
-    (suma, item) => suma + item.precio * item.cantidad,
+  // =========================================
+  // SUBTOTAL DE PRODUCTOS
+  // =========================================
+
+  const subtotal = carrito.reduce(
+    (suma, item) => suma + Number(item.precio) * item.cantidad,
     0,
   );
 
+  // =========================================
+  // ENVÍO A COBRAR
+  // =========================================
+
+  const envio = tipoEntrega === "domicilio" ? costoEnvio : 0;
+
+  // =========================================
+  // TOTAL FINAL
+  // =========================================
+
+  const total = subtotal + envio;
+
+  // =========================================
   // CANTIDAD TOTAL
+  // =========================================
+
   const cantidadProductos = carrito.reduce(
     (suma, item) => suma + item.cantidad,
     0,
   );
 
   // =========================================
-  // OBTENER UBICACION ACTUAL
+  // OBTENER UBICACIÓN ACTUAL
   // =========================================
 
   const obtenerUbicacionActual = () => {
@@ -210,17 +297,22 @@ function App() {
       return;
     }
 
-    // CAMBIA ESTE NUMERO POR EL WHATSAPP REAL
+    // WHATSAPP DEL NEGOCIO
     const numeroWhatsApp = "526361011255";
 
     let mensaje = "🍔 *NUEVO PEDIDO - MEZQUITE* 🍔\n\n";
 
+    // =========================================
     // CLIENTE
-    mensaje += "👤 *CLIENTE*\n";
+    // =========================================
 
+    mensaje += "👤 *CLIENTE*\n";
     mensaje += nombreCliente.trim() + "\n\n";
 
+    // =========================================
     // TIPO DE ENTREGA
+    // =========================================
+
     mensaje += "📦 *TIPO DE ENTREGA*\n";
 
     if (tipoEntrega === "recoger") {
@@ -241,38 +333,81 @@ function App() {
       mensaje += "\n";
     }
 
+    // =========================================
+    // FORMA DE PAGO
+    // =========================================
+
+    mensaje += "💳 *FORMA DE PAGO*\n";
+
+    if (formaPago === "efectivo") {
+      mensaje += "💵 Efectivo\n\n";
+    }
+
+    if (formaPago === "tarjeta") {
+      mensaje += "💳 Tarjeta\n\n";
+    }
+
+    // =========================================
     // PRODUCTOS
+    // =========================================
+
     mensaje += "🛒 *PEDIDO*\n\n";
 
     carrito.forEach((item) => {
       mensaje += "*" + item.cantidad + " x " + item.nombre + "*\n";
 
-      mensaje += "Precio: $" + item.precio + "\n";
+      mensaje += "Precio: $" + item.precio + " c/u\n";
 
       if (item.ingredientesQuitados && item.ingredientesQuitados.length > 0) {
         mensaje += "❌ Sin: " + item.ingredientesQuitados.join(", ") + "\n";
       }
 
-      mensaje += "Subtotal: $" + item.precio * item.cantidad + "\n\n";
+      mensaje += "Subtotal: $" + Number(item.precio) * item.cantidad + "\n\n";
     });
 
-    // TOTAL
+    // =========================================
+    // RESUMEN DE COBRO
+    // =========================================
+
+    mensaje += "💵 *RESUMEN DE COBRO*\n";
+
+    mensaje += "Subtotal: $" + subtotal + "\n";
+
+    if (tipoEntrega === "domicilio") {
+      mensaje += "Envío: $" + envio + "\n";
+    } else {
+      mensaje += "Envío: $0\n";
+    }
+
     mensaje += "💰 *TOTAL: $" + total + "*\n\n";
 
-    // INFORMACION
+    // =========================================
+    // INFORMACIÓN
+    // =========================================
+
     mensaje += "⏰ *INFORMACIÓN*\n";
 
     mensaje += "Tu pedido estará listo en aproximadamente 1 hora.\n";
 
     if (tipoEntrega === "recoger") {
       mensaje += "🏪 Recoger en Tienda Abarrotes Angostura.\n";
-
-      mensaje += "💵💳 Pago en efectivo o con tarjeta.";
     }
 
     if (tipoEntrega === "domicilio") {
-      mensaje += "🛵 El servicio a domicilio tendrá un costo de envío.";
+      mensaje += "🛵 Costo de envío incluido: $" + envio + ".\n";
     }
+
+    if (formaPago === "efectivo") {
+      mensaje += "💵 Forma de pago: Efectivo.";
+    }
+
+    if (formaPago === "tarjeta") {
+      mensaje += "💳 Forma de pago: Tarjeta.";
+    }
+
+    // =========================================
+    // ABRIR WHATSAPP
+    // =========================================
 
     const url =
       "https://wa.me/" +
@@ -285,7 +420,9 @@ function App() {
 
   return (
     <div className="mezquite">
-      {/* CARRITO FLOTANTE */}
+      {/* =====================================
+          CARRITO FLOTANTE
+      ====================================== */}
 
       {showHome && (
         <button
@@ -299,7 +436,9 @@ function App() {
         </button>
       )}
 
-      {/* PRODUCTO VOLANDO */}
+      {/* =====================================
+          PRODUCTO VOLANDO
+      ====================================== */}
 
       {animacionCarrito && (
         <div className="producto-volando">
@@ -311,7 +450,9 @@ function App() {
         </div>
       )}
 
-      {/* PANTALLAS */}
+      {/* =====================================
+          PANTALLAS
+      ====================================== */}
 
       {showBebidas ? (
         <Menubebidas
@@ -337,7 +478,9 @@ function App() {
         </div>
       )}
 
-      {/* CARRITO */}
+      {/* =====================================
+          CARRITO
+      ====================================== */}
 
       {mostrarCarrito && (
         <div className="carrito-fondo" onClick={() => setMostrarCarrito(false)}>
@@ -355,7 +498,9 @@ function App() {
               <p className="carrito-vacio">Tu carrito está vacío</p>
             ) : (
               <>
-                {/* PRODUCTOS */}
+                {/* =====================================
+                    PRODUCTOS
+                ====================================== */}
 
                 <div className="productos-carrito">
                   {carrito.map((item) => (
@@ -392,7 +537,7 @@ function App() {
                       </div>
 
                       <strong className="subtotal-producto">
-                        ${item.precio * item.cantidad}
+                        ${Number(item.precio) * item.cantidad}
                       </strong>
 
                       <button
@@ -405,7 +550,21 @@ function App() {
                   ))}
                 </div>
 
-                {/* TOTAL */}
+                {/* =====================================
+                    RESUMEN DE COBRO
+                ====================================== */}
+
+                <div className="carrito-total">
+                  <span>Subtotal</span>
+
+                  <strong>${subtotal}</strong>
+                </div>
+
+                <div className="carrito-total">
+                  <span>Envío</span>
+
+                  <strong>${envio}</strong>
+                </div>
 
                 <div className="carrito-total">
                   <span>Total</span>
@@ -413,9 +572,9 @@ function App() {
                   <strong>${total}</strong>
                 </div>
 
-                {/* ==================================
+                {/* =====================================
                     DATOS DEL CLIENTE
-                =================================== */}
+                ====================================== */}
 
                 <div className="datos-cliente">
                   <h3>👤 Datos para finalizar tu pedido</h3>
@@ -429,7 +588,9 @@ function App() {
                     onChange={(e) => setNombreCliente(e.target.value)}
                   />
 
-                  {/* ENTREGA */}
+                  {/* =================================
+                      ENTREGA
+                  ================================== */}
 
                   <h4>¿Cómo deseas recibir tu pedido?</h4>
 
@@ -459,7 +620,9 @@ function App() {
                     </button>
                   </div>
 
-                  {/* DATOS DE DOMICILIO */}
+                  {/* =================================
+                      DATOS DE DOMICILIO
+                  ================================== */}
 
                   {tipoEntrega === "domicilio" && (
                     <div className="datos-domicilio">
@@ -494,14 +657,50 @@ function App() {
                       )}
 
                       <p className="costo-envio">
-                        🛵 El servicio a domicilio tendrá un costo adicional de
-                        envío.
+                        🛵 Costo de envío:
+                        <strong> ${costoEnvio}</strong>
                       </p>
                     </div>
                   )}
+
+                  {/* =================================
+                      FORMA DE PAGO
+                  ================================== */}
+
+                  <div className="forma-pago">
+                    <h4>¿Cómo deseas pagar?</h4>
+
+                    <div className="opciones-entrega">
+                      <button
+                        type="button"
+                        className={
+                          formaPago === "efectivo"
+                            ? "opcion-entrega activa"
+                            : "opcion-entrega"
+                        }
+                        onClick={() => setFormaPago("efectivo")}
+                      >
+                        💵 Efectivo
+                      </button>
+
+                      <button
+                        type="button"
+                        className={
+                          formaPago === "tarjeta"
+                            ? "opcion-entrega activa"
+                            : "opcion-entrega"
+                        }
+                        onClick={() => setFormaPago("tarjeta")}
+                      >
+                        💳 Tarjeta
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                {/* AVISO */}
+                {/* =====================================
+                    AVISO
+                ====================================== */}
 
                 <div className="aviso-carrito">
                   <h3>⏰ ¡Importante!</h3>
@@ -519,22 +718,36 @@ function App() {
                       </p>
 
                       <p>
-                        💵💳 Puedes pagar en{" "}
-                        <strong>efectivo o con tarjeta</strong> al recoger tu
-                        pedido.
+                        Envío:
+                        <strong> $0</strong>
                       </p>
                     </>
                   )}
 
                   {tipoEntrega === "domicilio" && (
-                    <p>
-                      🛵 El servicio a domicilio tendrá un{" "}
-                      <strong>costo adicional de envío.</strong>
-                    </p>
+                    <>
+                      <p>
+                        🛵 Costo de envío:
+                        <strong> ${envio}</strong>
+                      </p>
+
+                      <p>
+                        Total con envío:
+                        <strong> ${total}</strong>
+                      </p>
+                    </>
                   )}
+
+                  <p>
+                    {formaPago === "efectivo"
+                      ? "💵 Forma de pago seleccionada: Efectivo."
+                      : "💳 Forma de pago seleccionada: Tarjeta."}
+                  </p>
                 </div>
 
-                {/* FINALIZAR */}
+                {/* =====================================
+                    FINALIZAR
+                ====================================== */}
 
                 <button className="btn-whatsapp" onClick={enviarWhatsApp}>
                   📱 Finalizar pedido
