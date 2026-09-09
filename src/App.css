@@ -1,28 +1,63 @@
+/* ========================================
+   PANTALLA INICIAL / LOGO
+======================================== */
+
 .mezquite {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* CONTENEDOR DEL LOGO */
+
+.intro-section {
+  width: 100%;
+  min-height: 100vh;
+
   display: flex;
   justify-content: center;
-  margin-top: 5%;
+  align-items: center;
+
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-.mezquite img {
-  width: 150%;
+/* LOGO */
+
+.intro-section .logo {
+  display: block;
+
+  width: auto;
+  max-width: 90%;
+  max-height: 80vh;
+
+  object-fit: contain;
+
+  margin: 0 auto;
 }
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 1024px) {
+  .intro-section .logo {
+    max-width: 85%;
+    max-height: 75vh;
+  }
+}
+
+/* ========================================
+   CELULAR
+======================================== */
 
 @media (max-width: 600px) {
-  .mezquite {
-    display: flex;
-    justify-content: center;
-    margin-top: 30%;
+  .intro-section {
+    padding: 15px;
   }
 
-  .mezquite img {
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .logo {
-    width: 120px;
+  .intro-section .logo {
+    max-width: 95%;
+    max-height: 70vh;
   }
 }
 
