@@ -31,6 +31,7 @@ function App() {
 
   const [nombreCliente, setNombreCliente] = useState("");
   const [tipoEntrega, setTipoEntrega] = useState("recoger");
+  const [mostrarAvisoDomicilio, setMostrarAvisoDomicilio] = useState(false);
 
   const [direccion, setDireccion] = useState("");
   const [ubicacion, setUbicacion] = useState("");
@@ -43,10 +44,15 @@ function App() {
   const [formaPago, setFormaPago] = useState("efectivo");
 
   // =========================================
-  // COSTO DE ENVÍO DESDE FIREBASE
+  // CONFIGURACIÓN DEL NEGOCIO DESDE FIREBASE
   // =========================================
 
   const [costoEnvio, setCostoEnvio] = useState(0);
+  const [modoNegocio, setModoNegocio] = useState("automatico");
+  const [horaApertura, setHoraApertura] = useState("07:00");
+  const [horaCierre, setHoraCierre] = useState("19:00");
+  const [diasAbiertos, setDiasAbiertos] = useState([1, 2, 3, 4, 5, 6]);
+  const [relojHorario, setRelojHorario] = useState(Date.now());
 
   useEffect(() => {
     const referenciaConfiguracion = doc(db, "configuracion", "negocio");
@@ -56,23 +62,165 @@ function App() {
       (documento) => {
         if (documento.exists()) {
           const datos = documento.data();
-
           const costo = Number(datos.costoEnvio);
 
           setCostoEnvio(Number.isFinite(costo) ? costo : 0);
-        } else {
-          setCostoEnvio(0);
+
+          // Compatibilidad con el cierre manual anterior
+          if (datos.modoNegocio) {
+            setModoNegocio(datos.modoNegocio);
+          } else if (datos.cerradoManual === true) {
+            setModoNegocio("cerrado");
+          } else {
+            setModoNegocio("automatico");
+          }
+
+          setHoraApertura(datos.horaApertura || "07:00");
+          setHoraCierre(datos.horaCierre || "19:00");
+          setDiasAbiertos(
+            Array.isArray(datos.diasAbiertos)
+              ? datos.diasAbiertos.map(Number)
+              : [1, 2, 3, 4, 5, 6],
+          );
         }
       },
       (error) => {
-        console.error("Error al leer costo de envío:", error);
-
-        setCostoEnvio(0);
+        console.error("Error al leer configuración del negocio:", error);
       },
     );
 
     return () => cancelarSuscripcion();
   }, []);
+
+  // Actualiza el estado del horario sin necesidad de recargar la app
+  useEffect(() => {
+    const intervalo = setInterval(() => {
+      setRelojHorario(Date.now());
+    }, 30000);
+
+    return () => clearInterval(intervalo);
+  }, []);
+
+  const nombresDias = {
+    0: "Dom",
+    1: "Lun",
+    2: "Mar",
+    3: "Mié",
+    4: "Jue",
+    5: "Vie",
+    6: "Sáb",
+  };
+
+  const convertirHoraAMPM = (hora24) => {
+    const [horaTexto, minutoTexto] = (hora24 || "00:00").split(":");
+    const hora = Number(horaTexto);
+    const minuto = minutoTexto || "00";
+    const periodo = hora >= 12 ? "PM" : "AM";
+    const hora12 = hora % 12 || 12;
+    return `${hora12}:${minuto} ${periodo}`;
+  };
+
+  const horarioTexto =
+    diasAbiertos.length > 0
+      ? `${diasAbiertos
+          .slice()
+          .sort((a, b) => a - b)
+          .map((dia) => nombresDias[dia])
+          .join(
+            ", ",
+          )} • ${convertirHoraAMPM(horaApertura)} - ${convertirHoraAMPM(horaCierre)}`
+      : "Sin días de apertura configurados";
+
+  const obtenerEstadoNegocio = () => {
+    // El administrador puede forzar abierto o cerrado sin importar día/hora.
+    if (modoNegocio === "abierto") {
+      return {
+        abierto: true,
+        motivo: "Abierto manualmente por administración",
+        forzado: true,
+      };
+    }
+
+    if (modoNegocio === "cerrado") {
+      return {
+        abierto: false,
+        motivo: "Cerrado temporalmente por administración",
+        forzado: true,
+      };
+    }
+
+    const fecha = new Date(relojHorario);
+    const partes = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Chihuahua",
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(fecha);
+
+    const valor = (tipo) =>
+      partes.find((parte) => parte.type === tipo)?.value || "";
+
+    const mapaDia = {
+      Sun: 0,
+      Mon: 1,
+      Tue: 2,
+      Wed: 3,
+      Thu: 4,
+      Fri: 5,
+      Sat: 6,
+    };
+
+    const diaActual = mapaDia[valor("weekday")];
+    const horaActual = Number(valor("hour"));
+    const minutoActual = Number(valor("minute"));
+    const minutosActuales = horaActual * 60 + minutoActual;
+
+    const [horaInicio, minutoInicio] = horaApertura.split(":").map(Number);
+    const [horaFin, minutoFin] = horaCierre.split(":").map(Number);
+    const minutosInicio = horaInicio * 60 + minutoInicio;
+    const minutosFin = horaFin * 60 + minutoFin;
+
+    const diaPermitido = diasAbiertos.includes(diaActual);
+    const dentroDelHorario =
+      minutosActuales >= minutosInicio && minutosActuales < minutosFin;
+
+    if (!diaPermitido) {
+      return {
+        abierto: false,
+        motivo: "Hoy no tenemos servicio según el horario configurado",
+        forzado: false,
+      };
+    }
+
+    if (!dentroDelHorario) {
+      return {
+        abierto: false,
+        motivo: "Fuera del horario de servicio",
+        forzado: false,
+      };
+    }
+
+    return {
+      abierto: true,
+      motivo: "Abierto y recibiendo pedidos",
+      forzado: false,
+    };
+  };
+
+  const estadoNegocio = obtenerEstadoNegocio();
+  const negocioAbierto = estadoNegocio.abierto;
+
+  const mostrarAlertaCerrado = () => {
+    alert(
+      `🔴 MEZQUITE ESTÁ CERRADO
+
+${estadoNegocio.motivo}.
+
+Horario configurado:
+${horarioTexto}`,
+    );
+  };
 
   // =========================================
   // ABRIR MENÚ
@@ -104,6 +252,11 @@ function App() {
   // =========================================
 
   const agregarAlCarrito = (producto) => {
+    if (!negocioAbierto) {
+      mostrarAlertaCerrado();
+      return;
+    }
+
     const idProducto =
       producto.nombre + JSON.stringify(producto.ingredientesQuitados || []);
 
@@ -228,6 +381,15 @@ function App() {
   );
 
   // =========================================
+  // SELECCIONAR ENVÍO A DOMICILIO
+  // =========================================
+
+  const seleccionarEnvioDomicilio = () => {
+    setTipoEntrega("domicilio");
+    setMostrarAvisoDomicilio(true);
+  };
+
+  // =========================================
   // OBTENER UBICACIÓN ACTUAL
   // =========================================
 
@@ -276,6 +438,11 @@ function App() {
   // =========================================
 
   const enviarWhatsApp = () => {
+    if (!negocioAbierto) {
+      mostrarAlertaCerrado();
+      return;
+    }
+
     if (carrito.length === 0) {
       alert("Tu carrito está vacío");
       return;
@@ -420,6 +587,33 @@ function App() {
 
   return (
     <div className="mezquite">
+      {showHome && (
+        <div
+          className={`estado-negocio ${
+            negocioAbierto ? "estado-negocio-abierto" : "estado-negocio-cerrado"
+          }`}
+        >
+          <div className="estado-negocio-contenido">
+            <strong>{negocioAbierto ? "🟢 ABIERTO" : "🔴 CERRADO"}</strong>
+
+            <span>Horario: {horarioTexto}</span>
+
+            {modoNegocio === "abierto" && (
+              <span className="estado-negocio-motivo">
+                Apertura manual activa por administración.
+              </span>
+            )}
+
+            {!negocioAbierto && (
+              <span className="estado-negocio-motivo">
+                {estadoNegocio.motivo}. No estamos recibiendo pedidos en este
+                momento.
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* =====================================
           CARRITO FLOTANTE
       ====================================== */}
@@ -614,7 +808,7 @@ function App() {
                           ? "opcion-entrega activa"
                           : "opcion-entrega"
                       }
-                      onClick={() => setTipoEntrega("domicilio")}
+                      onClick={seleccionarEnvioDomicilio}
                     >
                       🛵 Envío a domicilio
                     </button>
@@ -749,11 +943,55 @@ function App() {
                     FINALIZAR
                 ====================================== */}
 
-                <button className="btn-whatsapp" onClick={enviarWhatsApp}>
-                  📱 Finalizar pedido
+                <button
+                  className="btn-whatsapp"
+                  onClick={enviarWhatsApp}
+                  disabled={!negocioAbierto}
+                >
+                  {negocioAbierto
+                    ? "📱 Finalizar pedido"
+                    : "🔴 Cerrado - No se reciben pedidos"}
                 </button>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* =====================================
+          AVISO DE COBERTURA A DOMICILIO
+      ====================================== */}
+
+      {mostrarAvisoDomicilio && (
+        <div
+          className="aviso-domicilio-fondo"
+          onClick={() => setMostrarAvisoDomicilio(false)}
+        >
+          <div
+            className="aviso-domicilio-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="aviso-domicilio-icono">🛵</div>
+
+            <h2>¡Importante!</h2>
+
+            <p>
+              Por el momento, nuestro servicio a domicilio está disponible
+              únicamente en los{" "}
+              <strong>poblados del municipio de Galeana.</strong>
+            </p>
+
+            <p className="aviso-domicilio-gracias">
+              ¡Gracias por tu comprensión! 😊
+            </p>
+
+            <button
+              type="button"
+              className="btn-aviso-domicilio"
+              onClick={() => setMostrarAvisoDomicilio(false)}
+            >
+              👍 Entendido
+            </button>
           </div>
         </div>
       )}

@@ -72,6 +72,17 @@ function Admin() {
   const [guardandoCostoEnvio, setGuardandoCostoEnvio] = useState(false);
 
   // ========================================
+  // HORARIO Y ESTADO DEL NEGOCIO
+  // ========================================
+
+  const [modoNegocio, setModoNegocio] = useState("automatico");
+  const [horaApertura, setHoraApertura] = useState("07:00");
+  const [horaCierre, setHoraCierre] = useState("19:00");
+  const [diasAbiertos, setDiasAbiertos] = useState([1, 2, 3, 4, 5, 6]);
+  const [guardandoHorario, setGuardandoHorario] = useState(false);
+  const [cambiandoEstadoNegocio, setCambiandoEstadoNegocio] = useState(false);
+
+  // ========================================
   // AUTH
   // ========================================
 
@@ -128,6 +139,22 @@ function Admin() {
           const datos = documento.data();
 
           setCostoEnvio(datos.costoEnvio !== undefined ? datos.costoEnvio : "");
+
+          if (datos.modoNegocio) {
+            setModoNegocio(datos.modoNegocio);
+          } else if (datos.cerradoManual === true) {
+            setModoNegocio("cerrado");
+          } else {
+            setModoNegocio("automatico");
+          }
+
+          setHoraApertura(datos.horaApertura || "07:00");
+          setHoraCierre(datos.horaCierre || "19:00");
+          setDiasAbiertos(
+            Array.isArray(datos.diasAbiertos)
+              ? datos.diasAbiertos.map(Number)
+              : [1, 2, 3, 4, 5, 6],
+          );
         }
       },
       (error) => {
@@ -201,6 +228,90 @@ function Admin() {
       alert("No se pudo actualizar el costo de envío.");
     } finally {
       setGuardandoCostoEnvio(false);
+    }
+  };
+
+  // ========================================
+  // GUARDAR HORARIO
+  // ========================================
+
+  const cambiarDia = (dia) => {
+    setDiasAbiertos((actuales) =>
+      actuales.includes(dia)
+        ? actuales.filter((d) => d !== dia)
+        : [...actuales, dia].sort((a, b) => a - b),
+    );
+  };
+
+  const guardarHorario = async () => {
+    if (!horaApertura || !horaCierre) {
+      alert("Selecciona la hora de apertura y de cierre.");
+      return;
+    }
+
+    if (horaApertura >= horaCierre) {
+      alert("La hora de cierre debe ser posterior a la hora de apertura.");
+      return;
+    }
+
+    if (diasAbiertos.length === 0) {
+      alert("Selecciona por lo menos un día de servicio.");
+      return;
+    }
+
+    try {
+      setGuardandoHorario(true);
+      const referencia = doc(db, "configuracion", "negocio");
+
+      await updateDoc(referencia, {
+        horaApertura,
+        horaCierre,
+        diasAbiertos,
+      });
+
+      alert("✅ Horario actualizado correctamente.");
+    } catch (error) {
+      console.error("Error guardando horario:", error);
+      alert("No se pudo guardar el horario.");
+    } finally {
+      setGuardandoHorario(false);
+    }
+  };
+
+  // ========================================
+  // MODO DEL NEGOCIO
+  // automático = respeta horario
+  // abierto = abre aunque esté fuera de horario
+  // cerrado = cierra aunque esté dentro de horario
+  // ========================================
+
+  const cambiarModoNegocio = async (nuevoModo) => {
+    const textos = {
+      automatico:
+        "¿Deseas dejar Mezquite en modo automático? Se respetarán los días y horarios configurados.",
+      abierto:
+        "¿Deseas ABRIR Mezquite manualmente? Se aceptarán pedidos aunque sea un día u hora normalmente cerrados.",
+      cerrado:
+        "¿Deseas CERRAR Mezquite manualmente? No se aceptarán pedidos hasta cambiar el modo.",
+    };
+
+    if (!window.confirm(textos[nuevoModo])) return;
+
+    try {
+      setCambiandoEstadoNegocio(true);
+      const referencia = doc(db, "configuracion", "negocio");
+
+      await updateDoc(referencia, {
+        modoNegocio: nuevoModo,
+        cerradoManual: nuevoModo === "cerrado",
+      });
+
+      setModoNegocio(nuevoModo);
+    } catch (error) {
+      console.error("Error cambiando estado del negocio:", error);
+      alert("No se pudo cambiar el estado del negocio.");
+    } finally {
+      setCambiandoEstadoNegocio(false);
     }
   };
 
@@ -540,7 +651,122 @@ function Admin() {
           <div>
             <h2>⚙️ Configuración del negocio</h2>
 
-            <p>Cambia aquí el costo del servicio a domicilio.</p>
+            <p>
+              Administra el horario, el estado del negocio y el costo de envío.
+            </p>
+          </div>
+
+          <div className="estado-negocio-admin">
+            <h3>🕐 Horario de pedidos</h3>
+
+            <div className="horas-admin-grid">
+              <div>
+                <label>Hora de apertura</label>
+                <input
+                  type="time"
+                  value={horaApertura}
+                  onChange={(e) => setHoraApertura(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label>Hora de cierre</label>
+                <input
+                  type="time"
+                  value={horaCierre}
+                  onChange={(e) => setHoraCierre(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <label className="titulo-dias-admin">Días que estará abierto</label>
+
+            <div className="dias-admin-grid">
+              {[
+                [1, "Lunes"],
+                [2, "Martes"],
+                [3, "Miércoles"],
+                [4, "Jueves"],
+                [5, "Viernes"],
+                [6, "Sábado"],
+                [0, "Domingo"],
+              ].map(([numero, nombre]) => (
+                <label
+                  className={`dia-admin ${
+                    diasAbiertos.includes(numero) ? "dia-admin-activo" : ""
+                  }`}
+                  key={numero}
+                >
+                  <input
+                    type="checkbox"
+                    checked={diasAbiertos.includes(numero)}
+                    onChange={() => cambiarDia(numero)}
+                  />
+                  {nombre}
+                </label>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="btn-guardar-horario-admin"
+              onClick={guardarHorario}
+              disabled={guardandoHorario}
+            >
+              {guardandoHorario ? "Guardando..." : "💾 Guardar horario"}
+            </button>
+
+            <hr className="separador-admin" />
+
+            <h3>🏪 Estado manual del negocio</h3>
+
+            <p className="nota-horario-admin">
+              En <strong>Automático</strong> se respeta el horario. Si eliges
+              <strong> Abrir ahora</strong>, podrás recibir pedidos aunque esté
+              fuera del horario. <strong>Cerrar ahora</strong> bloquea todos los
+              pedidos.
+            </p>
+
+            <div className={`estado-actual-admin estado-modo-${modoNegocio}`}>
+              {modoNegocio === "automatico" && "🕐 MODO AUTOMÁTICO"}
+              {modoNegocio === "abierto" && "🟢 ABIERTO MANUALMENTE"}
+              {modoNegocio === "cerrado" && "🔴 CERRADO MANUALMENTE"}
+            </div>
+
+            <div className="botones-estado-negocio-admin">
+              <button
+                type="button"
+                className={`btn-modo-admin btn-automatico-admin ${
+                  modoNegocio === "automatico" ? "modo-seleccionado" : ""
+                }`}
+                onClick={() => cambiarModoNegocio("automatico")}
+                disabled={cambiandoEstadoNegocio}
+              >
+                🕐 Automático
+              </button>
+
+              <button
+                type="button"
+                className={`btn-modo-admin btn-abrir-negocio-admin ${
+                  modoNegocio === "abierto" ? "modo-seleccionado" : ""
+                }`}
+                onClick={() => cambiarModoNegocio("abierto")}
+                disabled={cambiandoEstadoNegocio}
+              >
+                🟢 Abrir ahora
+              </button>
+
+              <button
+                type="button"
+                className={`btn-modo-admin btn-cerrar-negocio-admin ${
+                  modoNegocio === "cerrado" ? "modo-seleccionado" : ""
+                }`}
+                onClick={() => cambiarModoNegocio("cerrado")}
+                disabled={cambiandoEstadoNegocio}
+              >
+                🔴 Cerrar ahora
+              </button>
+            </div>
           </div>
 
           <div className="configuracion-envio-admin">

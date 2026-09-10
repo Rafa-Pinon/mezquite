@@ -13,101 +13,66 @@ body {
 
 .admin-login-fondo {
   min-height: 100vh;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   padding: 20px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #111,
-      #292929
-    );
+  background: linear-gradient(135deg, #111, #292929);
 }
 
 .admin-login-card {
   width: 100%;
   max-width: 430px;
-
   background-color: white;
-
   padding: 35px;
-
   border-radius: 20px;
-
-  box-shadow:
-    0 15px 50px
-    rgba(0, 0, 0, 0.4);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
 }
 
 .admin-login-card h1 {
   margin: 0;
-
   color: #e63946;
-
   font-size: 38px;
-
   text-align: center;
 }
 
 .admin-login-card h2 {
   text-align: center;
-
   margin-bottom: 30px;
 }
 
 .admin-login-card label {
   display: block;
-
   margin-top: 15px;
   margin-bottom: 7px;
-
   font-weight: bold;
 }
 
 .admin-login-card input {
   width: 100%;
-
   padding: 14px;
-
   border: 1px solid #ccc;
-
   border-radius: 10px;
-
   font-size: 16px;
 }
 
 .admin-login-card button {
   width: 100%;
-
   margin-top: 25px;
-
   padding: 15px;
-
   border: none;
-
   border-radius: 10px;
-
   background-color: #e63946;
-
   color: white;
-
   font-size: 17px;
   font-weight: bold;
-
   cursor: pointer;
 }
 
 .admin-error {
   color: #b91c1c;
-
   background-color: #ffe8e8;
-
   padding: 10px;
-
   border-radius: 8px;
 }
 
@@ -117,11 +82,9 @@ body {
 
 .admin-cargando {
   min-height: 100vh;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   font-size: 25px;
 }
 
@@ -131,7 +94,6 @@ body {
 
 .admin-panel {
   min-height: 100vh;
-
   background-color: #f5f5f5;
 }
 
@@ -139,13 +101,9 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   padding: 20px 5%;
-
   background-color: #171717;
-
   color: white;
-
   gap: 20px;
 }
 
@@ -155,53 +113,41 @@ body {
 
 .admin-header p {
   margin: 5px 0 0;
-
   color: #bbb;
 }
 
 .admin-header-botones {
   display: flex;
-
   gap: 10px;
 }
 
 .admin-header button {
   padding: 12px 18px;
-
   border: none;
-
   border-radius: 9px;
-
   font-weight: bold;
-
   cursor: pointer;
 }
 
 .btn-nuevo {
   background-color: #25a244;
-
   color: white;
 }
 
 .btn-salir {
   background-color: #e63946;
-
   color: white;
 }
 
 .admin-contenido {
   width: 100%;
-
   max-width: 1250px;
-
   margin: auto;
-
   padding: 40px 25px;
 }
 
 .admin-contenido h2 {
   font-size: 30px;
-
   color: #222;
 }
 
@@ -211,30 +157,20 @@ body {
 
 .admin-productos-grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(3, 1fr);
-
+  grid-template-columns: repeat(3, 1fr);
   gap: 25px;
 }
 
 .admin-producto-card {
   overflow: hidden;
-
   background-color: white;
-
   border-radius: 18px;
-
-  box-shadow:
-    0 5px 18px
-    rgba(0, 0, 0, 0.12);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12);
 }
 
 .admin-producto-card img {
   width: 100%;
-
   height: 220px;
-
   object-fit: cover;
 }
 
@@ -244,79 +180,58 @@ body {
 
 .categoria-producto {
   display: inline-block;
-
   padding: 5px 10px;
-
   border-radius: 20px;
-
   background-color: #eee;
-
   color: #555;
-
   font-size: 13px;
 }
 
 .admin-producto-info h3 {
   margin-bottom: 5px;
-
   font-size: 22px;
 }
 
 .admin-producto-info h4 {
   margin: 5px 0 15px;
-
   color: #e63946;
-
   font-size: 26px;
 }
 
 .admin-producto-info p {
   color: #555;
-
   line-height: 1.5;
 }
 
 .ingredientes-admin {
   margin-top: 15px;
-
   padding: 12px;
-
   background-color: #f5f5f5;
-
   border-radius: 10px;
 }
 
 .botones-producto-admin {
   display: grid;
-
   grid-template-columns: 1fr 1fr;
-
   gap: 10px;
-
   margin-top: 18px;
 }
 
 .botones-producto-admin button {
   padding: 12px;
-
   border: none;
-
   border-radius: 9px;
-
   font-weight: bold;
-
   cursor: pointer;
 }
 
 .btn-editar {
   background-color: #2f80ed;
-
   color: white;
 }
 
 .btn-eliminar-admin {
   background-color: #e63946;
-
   color: white;
 }
 
@@ -326,55 +241,38 @@ body {
 
 .admin-modal-fondo {
   position: fixed;
-
   top: 0;
   left: 0;
-
   width: 100%;
   height: 100%;
-
-  background-color:
-    rgba(0, 0, 0, 0.7);
-
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-
   padding: 20px;
-
   z-index: 50000;
 }
 
 .admin-modal {
   position: relative;
-
   width: 100%;
-
   max-width: 600px;
-
   max-height: 90vh;
-
   overflow-y: auto;
-
   background-color: white;
-
   border-radius: 20px;
-
   padding: 30px;
 }
 
 .admin-modal h2 {
   margin-top: 0;
-
   font-size: 27px;
 }
 
 .admin-modal label {
   display: block;
-
   margin-top: 15px;
   margin-bottom: 6px;
-
   font-weight: bold;
 }
 
@@ -382,49 +280,34 @@ body {
 .admin-modal textarea,
 .admin-modal select {
   width: 100%;
-
   padding: 13px;
-
   border: 1px solid #ccc;
-
   border-radius: 9px;
-
   font-size: 16px;
 }
 
 .admin-modal textarea {
   min-height: 90px;
-
   resize: vertical;
 }
 
 .cerrar-admin-modal {
   position: absolute;
-
   top: 15px;
   right: 15px;
-
   width: 38px;
   height: 38px;
-
   border: none;
-
   border-radius: 50%;
-
   background-color: #e63946;
-
   color: white;
-
   cursor: pointer;
 }
 
 .checkbox-admin {
   display: flex !important;
-
   align-items: center;
-
   gap: 10px;
-
   margin-top: 20px !important;
 }
 
@@ -434,66 +317,17 @@ body {
 
 .btn-guardar-admin {
   width: 100%;
-
   margin-top: 25px;
-
   padding: 15px;
-
   border: none;
-
   border-radius: 10px;
-
   background-color: #25a244;
-
   color: white;
-
   font-size: 17px;
-
   font-weight: bold;
-
   cursor: pointer;
 }
 
-/* ========================================
-   CELULAR
-======================================== */
-
-@media (max-width: 950px) {
-  .admin-productos-grid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 650px) {
-  .admin-header {
-    flex-direction: column;
-
-    align-items: flex-start;
-  }
-
-  .admin-header-botones {
-    width: 100%;
-
-    flex-direction: column;
-  }
-
-  .admin-header-botones button {
-    width: 100%;
-  }
-
-  .admin-productos-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-contenido {
-    padding: 25px 15px;
-  }
-
-  .admin-modal {
-    padding: 25px 18px;
-  }
-}
 /* ========================================
    SUBIR IMÁGENES - ADMIN
 ======================================== */
@@ -543,6 +377,7 @@ body {
   opacity: 0.6;
   cursor: wait;
 }
+
 /* ========================================
    CONFIGURACIÓN DEL NEGOCIO
 ======================================== */
@@ -565,7 +400,7 @@ body {
 }
 
 .configuracion-envio-admin {
-  margin-top: 20px;
+  margin-top: 25px;
 }
 
 .configuracion-envio-admin label {
@@ -616,7 +451,258 @@ body {
   margin-top: 12px !important;
 }
 
-@media (max-width: 600px) {
+/* ========================================
+   HORARIO DEL NEGOCIO
+======================================== */
+
+.estado-negocio-admin {
+  margin-top: 25px;
+  padding: 22px;
+  background-color: #fafafa;
+  border: 1px solid #e2e2e2;
+  border-radius: 15px;
+}
+
+.estado-negocio-admin h3 {
+  margin: 0 0 18px;
+  font-size: 21px;
+  color: #222;
+}
+
+.horas-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.horas-admin-grid label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.horas-admin-grid input {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 9px;
+  font-size: 16px;
+  background-color: white;
+}
+
+.titulo-dias-admin {
+  display: block;
+  margin-top: 22px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+.dias-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.dia-admin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid #d5d5d5;
+  border-radius: 10px;
+  background-color: white;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dia-admin input {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.dia-admin-activo {
+  border-color: #25a244;
+  background-color: #eaf7ee;
+  color: #147a32;
+}
+
+.btn-guardar-horario-admin {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background-color: #2f80ed;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-guardar-horario-admin:hover {
+  opacity: 0.92;
+}
+
+.btn-guardar-horario-admin:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.separador-admin {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 25px 0;
+}
+
+.nota-horario-admin {
+  color: #555;
+  line-height: 1.55;
+  margin-bottom: 15px !important;
+}
+
+/* ========================================
+   ESTADO MANUAL DEL NEGOCIO
+======================================== */
+
+.estado-actual-admin {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  margin-bottom: 14px;
+  border: 2px solid transparent;
+}
+
+.estado-modo-automatico {
+  background-color: #eaf2ff;
+  border-color: #2f80ed;
+  color: #1559a6;
+}
+
+.estado-modo-abierto {
+  background-color: #e8f7ed;
+  border-color: #198754;
+  color: #146c43;
+}
+
+.estado-modo-cerrado {
+  background-color: #fdebec;
+  border-color: #e63946;
+  color: #b4232d;
+}
+
+.botones-estado-negocio-admin {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.btn-modo-admin {
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-modo-admin:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.btn-modo-admin:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-automatico-admin {
+  background-color: #2f80ed;
+}
+
+.btn-abrir-negocio-admin {
+  background-color: #198754;
+}
+
+.btn-cerrar-negocio-admin {
+  background-color: #e63946;
+}
+
+.btn-modo-admin.modo-seleccionado {
+  outline: 3px solid rgba(0, 0, 0, 0.12);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 950px) {
+  .admin-productos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dias-admin-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ========================================
+   CELULAR
+======================================== */
+
+@media (max-width: 650px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-header-botones {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .admin-header-botones button {
+    width: 100%;
+  }
+
+  .admin-productos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-contenido {
+    padding: 25px 15px;
+  }
+
+  .admin-modal {
+    padding: 25px 18px;
+  }
+
+  .horas-admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dias-admin-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .botones-estado-negocio-admin {
+    grid-template-columns: 1fr;
+  }
+
   .costo-envio-admin-control {
     flex-wrap: wrap;
   }
@@ -628,5 +714,15 @@ body {
 
   .btn-guardar-envio-admin {
     width: 100%;
+  }
+
+  .estado-negocio-admin {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .dias-admin-grid {
+    grid-template-columns: 1fr;
   }
 }

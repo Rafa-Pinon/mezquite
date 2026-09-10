@@ -857,3 +857,197 @@
     padding: 15px;
   }
 }
+
+/* ========================================
+   ESTADO / HORARIO DEL NEGOCIO
+======================================== */
+
+.estado-negocio {
+  position: sticky;
+  top: 0;
+  z-index: 8500;
+  width: 100%;
+  padding: 12px 18px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
+
+.estado-negocio-abierto {
+  background-color: #e7f7ec;
+  border-bottom: 2px solid #198754;
+  color: #125c32;
+}
+
+.estado-negocio-cerrado {
+  background-color: #ffe7e7;
+  border-bottom: 2px solid #dc3545;
+  color: #8b1e28;
+}
+
+.estado-negocio-contenido {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  text-align: center;
+}
+
+.estado-negocio-contenido strong {
+  font-size: 18px;
+}
+
+.estado-negocio-contenido span {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.estado-negocio-motivo {
+  width: 100%;
+  font-weight: 700 !important;
+}
+
+.btn-whatsapp:disabled {
+  background-color: #777 !important;
+  cursor: not-allowed !important;
+  opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+  .estado-negocio {
+    padding: 10px 12px;
+  }
+
+  .estado-negocio-contenido {
+    gap: 5px;
+  }
+
+  .estado-negocio-contenido strong {
+    width: 100%;
+    font-size: 17px;
+  }
+
+  .estado-negocio-contenido span {
+    width: 100%;
+    font-size: 13px;
+  }
+}
+
+
+/* ========================================
+   AVISO DE COBERTURA A DOMICILIO
+======================================== */
+
+.aviso-domicilio-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 30000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(3px);
+}
+
+.aviso-domicilio-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 30px 25px;
+  background-color: white;
+  border-radius: 22px;
+  text-align: center;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
+  animation: aparecerAvisoDomicilio 0.22s ease-out;
+}
+
+.aviso-domicilio-icono {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #fff3cd;
+  font-size: 38px;
+}
+
+.aviso-domicilio-card h2 {
+  margin: 0 0 14px;
+  color: #e63946;
+  font-size: 28px;
+}
+
+.aviso-domicilio-card p {
+  margin: 0;
+  color: #3f3f3f;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.aviso-domicilio-card strong {
+  color: #222;
+}
+
+.aviso-domicilio-gracias {
+  margin-top: 13px !important;
+  color: #666 !important;
+  font-size: 15px !important;
+}
+
+.btn-aviso-domicilio {
+  width: 100%;
+  margin-top: 24px;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background-color: #198754;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-aviso-domicilio:hover {
+  opacity: 0.92;
+}
+
+@keyframes aparecerAvisoDomicilio {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .aviso-domicilio-fondo {
+    padding: 16px;
+  }
+
+  .aviso-domicilio-card {
+    padding: 26px 20px;
+    border-radius: 18px;
+  }
+
+  .aviso-domicilio-card h2 {
+    font-size: 24px;
+  }
+
+  .aviso-domicilio-card p {
+    font-size: 16px;
+  }
+
+  .aviso-domicilio-icono {
+    width: 64px;
+    height: 64px;
+    font-size: 34px;
+  }
+}
