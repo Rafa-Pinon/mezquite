@@ -465,7 +465,7 @@ ${horarioTexto}`,
     }
 
     // WHATSAPP DEL NEGOCIO
-    const numeroWhatsApp = "526361011255";
+    const numeroWhatsApp = "526361249580";
 
     let mensaje = "🍔 *NUEVO PEDIDO - MEZQUITE* 🍔\n\n";
 
