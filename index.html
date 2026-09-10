@@ -77,7 +77,11 @@
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    <link rel="manifest" href="/manifest.json" />
+    <!--
+      Manifest por defecto para clientes.
+      Si estamos en /admin se cambia automáticamente a manifest-admin.json.
+    -->
+    <link id="app-manifest" rel="manifest" href="/manifest.json" />
 
     <!-- ========================================
          IOS / AGREGAR A INICIO
@@ -90,7 +94,38 @@
       content="black-translucent"
     />
 
-    <meta name="apple-mobile-web-app-title" content="Mezquite" />
+    <meta
+      id="apple-app-title"
+      name="apple-mobile-web-app-title"
+      content="Mezquite"
+    />
+
+    <!-- ========================================
+         DETECTAR CLIENTE / ADMIN
+    ======================================== -->
+
+    <script>
+      (function () {
+        const ruta = window.location.pathname;
+
+        const esAdmin = ruta === "/admin" || ruta.startsWith("/admin/");
+
+        if (esAdmin) {
+          const manifest = document.getElementById("app-manifest");
+          const appleTitle = document.getElementById("apple-app-title");
+
+          if (manifest) {
+            manifest.setAttribute("href", "/manifest-admin.json");
+          }
+
+          if (appleTitle) {
+            appleTitle.setAttribute("content", "Mezquite Admin");
+          }
+
+          document.title = "Mezquite Admin";
+        }
+      })();
+    </script>
   </head>
 
   <body>
