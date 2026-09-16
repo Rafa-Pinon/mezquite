@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./menu.css";
 
 import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -14,7 +14,19 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
 
   const [hamburguesas, setHamburguesas] = useState([]);
   const [alitas, setAlitas] = useState([]);
+  const [combos, setCombos] = useState([]);
   const [cargando, setCargando] = useState(true);
+
+  const hamburguesasRef = useRef(null);
+  const alitasRef = useRef(null);
+  const combosRef = useRef(null);
+
+  const irASeccion = (referencia) => {
+    referencia.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   // =========================================
   // LEER PRODUCTOS DESDE FIRESTORE
@@ -31,6 +43,11 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
     const consultaAlitas = query(
       referencia,
       where("categoria", "==", "alitas"),
+    );
+
+    const consultaCombos = query(
+      referencia,
+      where("categoria", "==", "combos"),
     );
 
     const unsubscribeHamburguesas = onSnapshot(
@@ -55,9 +72,19 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
       setAlitas(lista);
     });
 
+    const unsubscribeCombos = onSnapshot(consultaCombos, (snapshot) => {
+      const lista = snapshot.docs.map((documento) => ({
+        id: documento.id,
+        ...documento.data(),
+      }));
+
+      setCombos(lista);
+    });
+
     return () => {
       unsubscribeHamburguesas();
       unsubscribeAlitas();
+      unsubscribeCombos();
     };
   }, []);
 
@@ -139,10 +166,42 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
     <div className="menu-container">
       <div className="menu-header">
         <h1 className="menu-title">Nuestro Menú</h1>
+      </div>
 
-        <button className="btn-bebidas" onClick={onBebidasClick}>
-          🥤 Bebidas
-        </button>
+      <div className="menu-nav-sticky">
+        <div className="menu-nav-buttons">
+          <button
+            className="menu-nav-btn"
+            onClick={() => irASeccion(hamburguesasRef)}
+          >
+            <span className="menu-nav-icon">🍔</span>
+            <span>Hamburguesas</span>
+          </button>
+
+          <button
+            className="menu-nav-btn"
+            onClick={() => irASeccion(alitasRef)}
+          >
+            <span className="menu-nav-icon">🔥</span>
+            <span>Alitas</span>
+          </button>
+
+          <button
+            className="menu-nav-btn"
+            onClick={() => irASeccion(combosRef)}
+          >
+            <span className="menu-nav-icon">🍟</span>
+            <span>Combos</span>
+          </button>
+
+          <button
+            className="menu-nav-btn menu-nav-btn-bebidas"
+            onClick={onBebidasClick}
+          >
+            <span className="menu-nav-icon">🥤</span>
+            <span>Bebidas</span>
+          </button>
+        </div>
       </div>
 
       {cargando ? (
@@ -153,7 +212,12 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
               HAMBURGUESAS
           ================================= */}
 
-          <h2 className="section-title">🍔 Hamburguesas</h2>
+          <h2
+            ref={hamburguesasRef}
+            className="section-title menu-scroll-target"
+          >
+            🍔 Hamburguesas
+          </h2>
 
           <div className="cards-container">
             {hamburguesas.map((hamburguesa) => (
@@ -204,7 +268,12 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
               ALITAS
           ================================= */}
 
-          <h2 className="section-title wings-title">🔥 Alitas</h2>
+          <h2
+            ref={alitasRef}
+            className="section-title wings-title menu-scroll-target"
+          >
+            🔥 Alitas
+          </h2>
 
           <div className="cards-container">
             {alitas.map((alita) => (
@@ -236,6 +305,53 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
                     }}
                   >
                     {alita.disponible === false ? "Agotado" : "Ordenar"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* =================================
+              COMBOS
+          ================================= */}
+
+          <h2
+            ref={combosRef}
+            className="section-title wings-title menu-scroll-target"
+          >
+            🍟 Combos
+          </h2>
+
+          <div className="cards-container">
+            {combos.map((combo) => (
+              <div
+                className={`food-card ${
+                  combo.disponible === false ? "producto-agotado" : ""
+                }`}
+                key={combo.id}
+              >
+                {combo.disponible === false && (
+                  <div className="letrero-agotado">AGOTADO</div>
+                )}
+
+                {combo.imagen && <img src={combo.imagen} alt={combo.nombre} />}
+
+                <div className="food-info">
+                  <h3>{combo.nombre}</h3>
+
+                  <p>{combo.descripcion}</p>
+
+                  <h4>${combo.precio}</h4>
+
+                  <button
+                    disabled={combo.disponible === false}
+                    onClick={() => {
+                      if (combo.disponible !== false) {
+                        agregarProductoSimple(combo);
+                      }
+                    }}
+                  >
+                    {combo.disponible === false ? "Agotado" : "Ordenar"}
                   </button>
                 </div>
               </div>

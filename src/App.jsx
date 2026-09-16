@@ -32,6 +32,9 @@ function App() {
   const [nombreCliente, setNombreCliente] = useState("");
   const [tipoEntrega, setTipoEntrega] = useState("recoger");
   const [mostrarAvisoDomicilio, setMostrarAvisoDomicilio] = useState(false);
+  const [mostrarHorario, setMostrarHorario] = useState(false);
+  const [mostrarRecordatorioBebidas, setMostrarRecordatorioBebidas] =
+    useState(false);
 
   const [direccion, setDireccion] = useState("");
   const [ubicacion, setUbicacion] = useState("");
@@ -437,7 +440,20 @@ ${horarioTexto}`,
   // ENVIAR PEDIDO POR WHATSAPP
   // =========================================
 
+  const carritoTieneBebidas = carrito.some(
+    (item) => String(item.categoria || "").toLowerCase() === "bebidas",
+  );
+
   const enviarWhatsApp = () => {
+    if (!carritoTieneBebidas) {
+      setMostrarRecordatorioBebidas(true);
+      return;
+    }
+
+    continuarPedidoWhatsApp();
+  };
+
+  const continuarPedidoWhatsApp = () => {
     if (!negocioAbierto) {
       mostrarAlertaCerrado();
       return;
@@ -465,7 +481,7 @@ ${horarioTexto}`,
     }
 
     // WHATSAPP DEL NEGOCIO
-    const numeroWhatsApp = "526361249580";
+    const numeroWhatsApp = "526361011255";
 
     let mensaje = "🍔 *NUEVO PEDIDO - MEZQUITE* 🍔\n\n";
 
@@ -554,13 +570,14 @@ ${horarioTexto}`,
 
     mensaje += "⏰ *INFORMACIÓN*\n";
 
-    mensaje += "Tu pedido estará listo en aproximadamente 1 hora.\n";
-
     if (tipoEntrega === "recoger") {
-      mensaje += "🏪 Recoger en Tienda Abarrotes Angostura.\n";
+      mensaje +=
+        "🏪 Te confirmaremos por mensaje la hora en que tu pedido estará listo para recoger en Tienda Abarrotes Angostura.\n";
     }
 
     if (tipoEntrega === "domicilio") {
+      mensaje +=
+        "🛵 Te confirmaremos por mensaje el tiempo estimado de entrega de tu pedido a domicilio.\n";
       mensaje += "🛵 Costo de envío incluido: $" + envio + ".\n";
     }
 
@@ -588,29 +605,22 @@ ${horarioTexto}`,
   return (
     <div className="mezquite">
       {showHome && (
-        <div
-          className={`estado-negocio ${
-            negocioAbierto ? "estado-negocio-abierto" : "estado-negocio-cerrado"
-          }`}
-        >
-          <div className="estado-negocio-contenido">
-            <strong>{negocioAbierto ? "🟢 ABIERTO" : "🔴 CERRADO"}</strong>
-
-            <span>Horario: {horarioTexto}</span>
-
-            {modoNegocio === "abierto" && (
-              <span className="estado-negocio-motivo">
-                Apertura manual activa por administración.
-              </span>
-            )}
-
-            {!negocioAbierto && (
-              <span className="estado-negocio-motivo">
-                {estadoNegocio.motivo}. No estamos recibiendo pedidos en este
-                momento.
-              </span>
-            )}
-          </div>
+        <div className="estado-compacto-wrap">
+          <button
+            type="button"
+            className={`estado-compacto ${
+              negocioAbierto
+                ? "estado-compacto-abierto"
+                : "estado-compacto-cerrado"
+            }`}
+            onClick={() => setMostrarHorario(true)}
+            aria-label="Ver horario de Mezquite"
+          >
+            <span className="estado-compacto-punto" aria-hidden="true"></span>
+            <strong>{negocioAbierto ? "ABIERTO" : "CERRADO"}</strong>
+            <span className="estado-compacto-separador">·</span>
+            <span className="estado-compacto-link">Ver horario</span>
+          </button>
         </div>
       )}
 
@@ -899,15 +909,11 @@ ${horarioTexto}`,
                 <div className="aviso-carrito">
                   <h3>⏰ ¡Importante!</h3>
 
-                  <p>
-                    Tu pedido estará listo en aproximadamente
-                    <strong> 1 hora.</strong>
-                  </p>
-
                   {tipoEntrega === "recoger" && (
                     <>
                       <p>
-                        🏪 Puedes pasar a recogerlo en
+                        🏪 Te confirmaremos por mensaje la hora en que tu pedido
+                        estará listo para recoger en
                         <strong> Tienda Abarrotes Angostura.</strong>
                       </p>
 
@@ -920,6 +926,11 @@ ${horarioTexto}`,
 
                   {tipoEntrega === "domicilio" && (
                     <>
+                      <p>
+                        🛵 Te confirmaremos por mensaje el tiempo estimado de
+                        entrega de tu pedido a domicilio.
+                      </p>
+
                       <p>
                         🛵 Costo de envío:
                         <strong> ${envio}</strong>
@@ -954,6 +965,118 @@ ${horarioTexto}`,
                 </button>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* =====================================
+          RECORDATORIO DE BEBIDAS
+      ====================================== */}
+
+      {mostrarRecordatorioBebidas && (
+        <div
+          className="bebidas-recordatorio-fondo"
+          onClick={() => setMostrarRecordatorioBebidas(false)}
+        >
+          <div
+            className="bebidas-recordatorio-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bebidas-recordatorio-icono">🥤</div>
+
+            <h2>¿Te faltan las bebidas?</h2>
+
+            <p>
+              Notamos que aún no agregaste bebidas a tu pedido. ¿Quieres agregar
+              alguna antes de finalizar?
+            </p>
+
+            <button
+              type="button"
+              className="btn-recordatorio-bebidas"
+              onClick={() => {
+                setMostrarRecordatorioBebidas(false);
+                setMostrarCarrito(false);
+                handleBebidasClick();
+              }}
+            >
+              🥤 Ver bebidas
+            </button>
+
+            <button
+              type="button"
+              className="btn-continuar-sin-bebidas"
+              onClick={() => {
+                setMostrarRecordatorioBebidas(false);
+                continuarPedidoWhatsApp();
+              }}
+            >
+              No, continuar con mi pedido
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================
+          HORARIO DEL NEGOCIO
+      ====================================== */}
+
+      {mostrarHorario && (
+        <div
+          className="horario-modal-fondo"
+          onClick={() => setMostrarHorario(false)}
+        >
+          <div
+            className="horario-modal-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="horario-modal-cerrar"
+              onClick={() => setMostrarHorario(false)}
+              aria-label="Cerrar horario"
+            >
+              ✕
+            </button>
+
+            <div
+              className={`horario-modal-estado ${
+                negocioAbierto
+                  ? "horario-modal-estado-abierto"
+                  : "horario-modal-estado-cerrado"
+              }`}
+            >
+              <span className="horario-modal-punto"></span>
+              {negocioAbierto ? "ABIERTO AHORA" : "CERRADO AHORA"}
+            </div>
+
+            <h2>Horario de Mezquite</h2>
+
+            <div className="horario-modal-horario">
+              <span className="horario-modal-reloj">🕐</span>
+              <p>{horarioTexto}</p>
+            </div>
+
+            {modoNegocio === "abierto" && (
+              <p className="horario-modal-nota">
+                Hoy estamos atendiendo con apertura especial.
+              </p>
+            )}
+
+            {!negocioAbierto && (
+              <p className="horario-modal-nota">
+                {estadoNegocio.motivo}. No estamos recibiendo pedidos en este
+                momento.
+              </p>
+            )}
+
+            <button
+              type="button"
+              className="horario-modal-entendido"
+              onClick={() => setMostrarHorario(false)}
+            >
+              Entendido
+            </button>
           </div>
         </div>
       )}

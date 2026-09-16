@@ -859,82 +859,106 @@
 }
 
 /* ========================================
-   ESTADO / HORARIO DEL NEGOCIO
+   ESTADO COMPACTO / HORARIO DEL NEGOCIO
 ======================================== */
 
-.estado-negocio {
-  position: sticky;
-  top: 0;
-  z-index: 8500;
+.estado-compacto-wrap {
   width: 100%;
-  padding: 12px 18px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-}
-
-.estado-negocio-abierto {
-  background-color: #e7f7ec;
-  border-bottom: 2px solid #198754;
-  color: #125c32;
-}
-
-.estado-negocio-cerrado {
-  background-color: #ffe7e7;
-  border-bottom: 2px solid #dc3545;
-  color: #8b1e28;
-}
-
-.estado-negocio-contenido {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
   display: flex;
   justify-content: center;
+  padding: 14px 16px 0;
+}
+
+.estado-compacto {
+  display: inline-flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  text-align: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 9px 15px;
+  border: 1px solid;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
-.estado-negocio-contenido strong {
-  font-size: 18px;
+.estado-compacto:hover { transform: translateY(-1px); box-shadow: 0 7px 18px rgba(0,0,0,.12); }
+.estado-compacto-abierto { color: #125c32; border-color: rgba(25,135,84,.28); }
+.estado-compacto-cerrado { color: #9b2635; border-color: rgba(220,53,69,.28); }
+
+.estado-compacto-punto, .horario-modal-punto {
+  width: 9px; height: 9px; flex: 0 0 9px; border-radius: 50%; background: currentColor;
 }
 
-.estado-negocio-contenido span {
-  font-size: 15px;
-  font-weight: 600;
+.estado-compacto-separador { color: #999; }
+.estado-compacto-link { font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+
+.horario-modal-fondo {
+  position: fixed; inset: 0; z-index: 31000;
+  display: flex; justify-content: center; align-items: center;
+  padding: 20px; background: rgba(0,0,0,.58);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
 }
 
-.estado-negocio-motivo {
-  width: 100%;
-  font-weight: 700 !important;
+.horario-modal-card {
+  position: relative; width: 100%; max-width: 430px;
+  padding: 30px 26px 25px; border-radius: 22px;
+  background: #fff; text-align: center;
+  box-shadow: 0 18px 55px rgba(0,0,0,.28);
+  animation: aparecerHorario .2s ease-out;
 }
 
-.btn-whatsapp:disabled {
-  background-color: #777 !important;
-  cursor: not-allowed !important;
-  opacity: 0.8;
+.horario-modal-cerrar {
+  position: absolute; top: 12px; right: 12px;
+  width: 38px; height: 38px; border: 0; border-radius: 50%;
+  background: #f1f1f1; color: #333; font-size: 17px; cursor: pointer;
+}
+
+.horario-modal-estado {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 14px; padding: 7px 12px; border-radius: 999px;
+  font-size: 13px; font-weight: 900; letter-spacing: .5px;
+}
+
+.horario-modal-estado-abierto { background: #e7f7ec; color: #125c32; }
+.horario-modal-estado-cerrado { background: #ffe7e7; color: #9b2635; }
+
+.horario-modal-card h2 { margin: 0 0 20px; color: #222; font-size: 27px; }
+
+.horario-modal-horario {
+  display: flex; align-items: center; gap: 13px;
+  padding: 16px; border: 1px solid #e5e5e5;
+  border-radius: 15px; background: #f8faf9; text-align: left;
+}
+
+.horario-modal-reloj { font-size: 28px; }
+.horario-modal-horario p { margin: 0; color: #333; font-size: 16px; font-weight: 700; line-height: 1.5; }
+.horario-modal-nota { margin: 16px 4px 0; color: #666; font-size: 14px; line-height: 1.5; }
+
+.horario-modal-entendido {
+  width: 100%; margin-top: 22px; padding: 14px;
+  border: 0; border-radius: 12px; background: #063b20;
+  color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+}
+.horario-modal-entendido:hover { opacity: .92; }
+
+.btn-whatsapp:disabled { background-color: #777 !important; cursor: not-allowed !important; opacity: .8; }
+
+@keyframes aparecerHorario {
+  from { opacity: 0; transform: scale(.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @media (max-width: 600px) {
-  .estado-negocio {
-    padding: 10px 12px;
-  }
-
-  .estado-negocio-contenido {
-    gap: 5px;
-  }
-
-  .estado-negocio-contenido strong {
-    width: 100%;
-    font-size: 17px;
-  }
-
-  .estado-negocio-contenido span {
-    width: 100%;
-    font-size: 13px;
-  }
+  .estado-compacto-wrap { padding-top: 10px; }
+  .estado-compacto { min-height: 38px; padding: 8px 13px; font-size: 13px; }
+  .horario-modal-card { padding: 27px 20px 22px; border-radius: 19px; }
+  .horario-modal-card h2 { font-size: 24px; }
+  .horario-modal-horario p { font-size: 15px; }
 }
-
 
 /* ========================================
    AVISO DE COBERTURA A DOMICILIO
@@ -1046,6 +1070,122 @@
   }
 
   .aviso-domicilio-icono {
+    width: 64px;
+    height: 64px;
+    font-size: 34px;
+  }
+}
+
+
+/* ========================================
+   RECORDATORIO DE BEBIDAS
+======================================== */
+
+.bebidas-recordatorio-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 32000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.bebidas-recordatorio-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 30px 25px 24px;
+  border-radius: 22px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.3);
+  animation: aparecerRecordatorioBebidas 0.2s ease-out;
+}
+
+.bebidas-recordatorio-icono {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #eaf5ef;
+  font-size: 38px;
+}
+
+.bebidas-recordatorio-card h2 {
+  margin: 0 0 12px;
+  color: #222;
+  font-size: 26px;
+}
+
+.bebidas-recordatorio-card p {
+  margin: 0;
+  color: #555;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.btn-recordatorio-bebidas,
+.btn-continuar-sin-bebidas {
+  width: 100%;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-recordatorio-bebidas {
+  margin-top: 23px;
+  padding: 15px;
+  border: 0;
+  background: #063b20;
+  color: #fff;
+}
+
+.btn-continuar-sin-bebidas {
+  margin-top: 10px;
+  padding: 13px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #555;
+}
+
+.btn-recordatorio-bebidas:hover,
+.btn-continuar-sin-bebidas:hover {
+  opacity: 0.92;
+}
+
+@keyframes aparecerRecordatorioBebidas {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .bebidas-recordatorio-card {
+    padding: 27px 20px 21px;
+    border-radius: 19px;
+  }
+
+  .bebidas-recordatorio-card h2 {
+    font-size: 23px;
+  }
+
+  .bebidas-recordatorio-card p {
+    font-size: 15px;
+  }
+
+  .bebidas-recordatorio-icono {
     width: 64px;
     height: 64px;
     font-size: 34px;

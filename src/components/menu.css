@@ -11,17 +11,16 @@ body {
 .menu-container {
   min-height: 100vh;
   width: 100%;
-  padding: 40px 6%;
+  padding: 38px 6% 40px;
 }
 
-/* CONTENEDOR DEL TITULO Y BOTON BEBIDAS */
+/* CONTENEDOR DEL TITULO */
 
 .menu-header {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 25px;
-  margin-bottom: 45px;
+  margin-bottom: 18px;
 }
 
 /* TITULO PRINCIPAL */
@@ -30,31 +29,93 @@ body {
   text-align: center;
   font-size: 45px;
   color: #222;
-  margin-bottom: 0;
-  margin-top: -7%;
+  margin: 0;
 }
 
-/* BOTON BEBIDAS */
+/* ========================================
+   BARRA FIJA DE NAVEGACIÓN DEL MENÚ
+======================================== */
 
-.btn-bebidas {
-  width: auto;
-  background-color: #e63946;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
-  font-size: 17px;
-  font-weight: bold;
+.menu-nav-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  width: 100%;
+  padding: 10px 0;
+  margin-bottom: 35px;
+  background: rgba(245, 245, 245, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.menu-nav-buttons {
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.menu-nav-btn {
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 13px 16px;
+  border: 1px solid rgba(6, 59, 32, 0.14);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%);
+  color: #063b20;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.1px;
   cursor: pointer;
-  transition: 0.3s;
+  box-shadow:
+    0 5px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
-.btn-bebidas:hover {
-  background-color: #b91c2a;
-  transform: scale(1.05);
+.menu-nav-btn:hover {
+  transform: translateY(-3px);
+  border-color: rgba(6, 59, 32, 0.32);
+  background: #ffffff;
+  box-shadow: 0 9px 22px rgba(0, 0, 0, 0.13);
 }
 
-/* TITULO HAMBURGUESAS / ALITAS */
+.menu-nav-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.menu-nav-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.menu-nav-btn-bebidas {
+  background: linear-gradient(135deg, #063b20 0%, #0b6338 100%);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.menu-nav-btn-bebidas:hover {
+  background: linear-gradient(135deg, #052f1a 0%, #08542f 100%);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.menu-scroll-target {
+  scroll-margin-top: 145px;
+}
+
+/* TITULO HAMBURGUESAS / ALITAS / COMBOS */
 
 .section-title {
   font-size: 30px;
@@ -77,32 +138,24 @@ body {
 /* CARTA */
 
 .food-card {
+  position: relative;
   background-color: white;
   border-radius: 18px;
   overflow: hidden;
-
   box-shadow: 0 5px 18px rgba(0, 0, 0, 0.15);
-
   transition: 0.3s;
 }
 
-/* EFECTO CUANDO PASAS EL MOUSE */
-
 .food-card:hover {
   transform: translateY(-8px);
-
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.22);
 }
-
-/* IMAGEN */
 
 .food-card img {
   width: 100%;
   height: 220px;
   object-fit: cover;
 }
-
-/* INFORMACION */
 
 .food-info {
   padding: 20px;
@@ -122,15 +175,11 @@ body {
   min-height: 65px;
 }
 
-/* PRECIO */
-
 .food-info h4 {
   color: #e63946;
   font-size: 26px;
   margin: 15px 0;
 }
-
-/* BOTON ORDENAR */
 
 .food-info button {
   width: 100%;
@@ -149,6 +198,161 @@ body {
   background-color: #bd1f2d;
 }
 
+.hamburguesa-card {
+  cursor: pointer;
+}
+
+/* MODAL */
+
+.modal-fondo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 9999;
+}
+
+.modal-producto {
+  position: relative;
+  width: 100%;
+  max-width: 470px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+
+.cerrar-modal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background-color: #e63946;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.modal-imagen {
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 15px;
+}
+
+.modal-producto h2 {
+  margin: 5px 0;
+  font-size: 28px;
+  color: #222;
+}
+
+.modal-precio {
+  font-size: 26px;
+  color: #e63946;
+  margin: 5px 0 20px;
+}
+
+.modal-instruccion {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.lista-ingredientes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.ingrediente-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.ingrediente-item input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #e63946;
+}
+
+.btn-confirmar-pedido {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background-color: #e63946;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-confirmar-pedido:hover {
+  background-color: #bd1f2d;
+}
+
+/* PRODUCTO AGOTADO */
+
+.producto-agotado {
+  cursor: not-allowed !important;
+}
+
+.producto-agotado img {
+  filter: grayscale(60%);
+  opacity: 0.55;
+}
+
+.producto-agotado .food-info {
+  opacity: 0.7;
+}
+
+.letrero-agotado {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 145%;
+  transform: translate(-50%, -50%) rotate(-25deg);
+  background-color: rgba(220, 0, 0, 0.92);
+  color: white;
+  font-size: 30px;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 5px;
+  padding: 12px 0;
+  z-index: 50;
+  pointer-events: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+}
+
+.food-card button:disabled {
+  background-color: #777 !important;
+  color: white !important;
+  cursor: not-allowed !important;
+  opacity: 0.8;
+}
+
 /* TABLET */
 
 @media (max-width: 1000px) {
@@ -159,23 +363,43 @@ body {
 
 /* CELULAR */
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .menu-container {
-    padding: 25px 15px;
+    padding: 28px 15px 25px;
   }
 
   .menu-header {
-    flex-direction: column;
-    gap: 15px;
+    margin-bottom: 15px;
   }
 
   .menu-title {
     font-size: 34px;
-    margin-top: 0;
   }
 
-  .btn-bebidas {
-    width: 180px;
+  .menu-nav-sticky {
+    top: 0;
+    padding: 8px 0;
+    margin-bottom: 25px;
+  }
+
+  .menu-nav-buttons {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .menu-nav-btn {
+    min-height: 54px;
+    padding: 11px 10px;
+    border-radius: 14px;
+    font-size: 14px;
+  }
+
+  .menu-nav-icon {
+    font-size: 20px;
+  }
+
+  .menu-scroll-target {
+    scroll-margin-top: 190px;
   }
 
   .section-title {
@@ -189,179 +413,7 @@ body {
   .food-card img {
     height: 230px;
   }
-  
-}
-/* HAMBURGUESAS CLICKEABLES */
 
-.hamburguesa-card {
-  cursor: pointer;
-}
-
-/* FONDO DE LA VENTANA */
-
-.modal-fondo {
-  position: fixed;
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 100%;
-
-  background-color: rgba(0, 0, 0, 0.65);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 20px;
-
-  z-index: 9999;
-}
-
-/* VENTANA DEL PRODUCTO */
-
-.modal-producto {
-  position: relative;
-
-  width: 100%;
-  max-width: 470px;
-
-  max-height: 90vh;
-  overflow-y: auto;
-
-  background-color: white;
-
-  border-radius: 20px;
-
-  padding: 25px;
-
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
-}
-
-/* BOTON CERRAR */
-
-.cerrar-modal {
-  position: absolute;
-
-  top: 12px;
-  right: 12px;
-
-  width: 38px;
-  height: 38px;
-
-  border: none;
-  border-radius: 50%;
-
-  background-color: #e63946;
-  color: white;
-
-  font-size: 18px;
-
-  cursor: pointer;
-
-  z-index: 2;
-}
-
-/* IMAGEN */
-
-.modal-imagen {
-  width: 100%;
-  height: 230px;
-
-  object-fit: cover;
-
-  border-radius: 15px;
-
-  margin-bottom: 15px;
-}
-
-.modal-producto h2 {
-  margin: 5px 0;
-  font-size: 28px;
-  color: #222;
-}
-
-.modal-precio {
-  font-size: 26px;
-  color: #e63946;
-
-  margin: 5px 0 20px;
-}
-
-.modal-instruccion {
-  font-size: 16px;
-  color: #555;
-
-  margin-bottom: 15px;
-}
-
-/* LISTA DE INGREDIENTES */
-
-.lista-ingredientes {
-  display: flex;
-  flex-direction: column;
-
-  gap: 10px;
-
-  margin-bottom: 25px;
-}
-
-.ingrediente-item {
-  display: flex;
-  align-items: center;
-
-  gap: 12px;
-
-  padding: 12px 15px;
-
-  background-color: #f5f5f5;
-
-  border-radius: 10px;
-
-  cursor: pointer;
-
-  font-size: 17px;
-}
-
-/* CUADRITO CHECKBOX */
-
-.ingrediente-item input {
-  width: 20px;
-  height: 20px;
-
-  cursor: pointer;
-
-  accent-color: #e63946;
-}
-
-/* BOTON CONFIRMAR */
-
-.btn-confirmar-pedido {
-  width: 100%;
-
-  padding: 15px;
-
-  border: none;
-  border-radius: 12px;
-
-  background-color: #e63946;
-  color: white;
-
-  font-size: 18px;
-  font-weight: bold;
-
-  cursor: pointer;
-
-  transition: 0.3s;
-}
-
-.btn-confirmar-pedido:hover {
-  background-color: #bd1f2d;
-}
-
-/* CELULAR */
-
-@media (max-width: 600px) {
   .modal-producto {
     padding: 18px;
   }
@@ -377,74 +429,20 @@ body {
   .ingrediente-item {
     font-size: 16px;
   }
-}
-/* ========================================
-   PRODUCTO AGOTADO
-======================================== */
 
-.food-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.producto-agotado {
-  cursor: not-allowed !important;
-}
-
-.producto-agotado img {
-  filter: grayscale(60%);
-  opacity: 0.55;
-}
-
-.producto-agotado .food-info {
-  opacity: 0.7;
-}
-
-/* LETRERO DIAGONAL ROJO */
-
-.letrero-agotado {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-
-  width: 145%;
-
-  transform:
-    translate(-50%, -50%)
-    rotate(-25deg);
-
-  background-color: rgba(220, 0, 0, 0.92);
-  color: white;
-
-  font-size: 30px;
-  font-weight: 900;
-
-  text-align: center;
-  letter-spacing: 5px;
-
-  padding: 12px 0;
-
-  z-index: 50;
-
-  pointer-events: none;
-
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.35);
-}
-
-/* BOTÓN DESACTIVADO */
-
-.food-card button:disabled {
-  background-color: #777 !important;
-  color: white !important;
-  cursor: not-allowed !important;
-  opacity: 0.8;
-}
-
-@media (max-width: 600px) {
   .letrero-agotado {
     font-size: 24px;
     letter-spacing: 4px;
     padding: 10px 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .menu-nav-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-scroll-target {
+    scroll-margin-top: 300px;
   }
 }
