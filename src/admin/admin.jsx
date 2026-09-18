@@ -923,6 +923,8 @@ function Admin() {
 
               <option value="combos">Combos</option>
 
+              <option value="papas">Papas</option>
+
               <option value="bebidas">Bebidas</option>
             </select>
 
@@ -1075,6 +1077,8 @@ function Admin() {
               <option value="alitas">Alitas</option>
 
               <option value="combos">Combos</option>
+
+              <option value="papas">Papas</option>
 
               <option value="bebidas">Bebidas</option>
             </select>

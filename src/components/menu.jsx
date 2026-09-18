@@ -15,11 +15,13 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
   const [hamburguesas, setHamburguesas] = useState([]);
   const [alitas, setAlitas] = useState([]);
   const [combos, setCombos] = useState([]);
+  const [papas, setPapas] = useState([]);
   const [cargando, setCargando] = useState(true);
 
   const hamburguesasRef = useRef(null);
   const alitasRef = useRef(null);
   const combosRef = useRef(null);
+  const papasRef = useRef(null);
 
   const irASeccion = (referencia) => {
     referencia.current?.scrollIntoView({
@@ -49,6 +51,8 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
       referencia,
       where("categoria", "==", "combos"),
     );
+
+    const consultaPapas = query(referencia, where("categoria", "==", "papas"));
 
     const unsubscribeHamburguesas = onSnapshot(
       consultaHamburguesas,
@@ -81,10 +85,20 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
       setCombos(lista);
     });
 
+    const unsubscribePapas = onSnapshot(consultaPapas, (snapshot) => {
+      const lista = snapshot.docs.map((documento) => ({
+        id: documento.id,
+        ...documento.data(),
+      }));
+
+      setPapas(lista);
+    });
+
     return () => {
       unsubscribeHamburguesas();
       unsubscribeAlitas();
       unsubscribeCombos();
+      unsubscribePapas();
     };
   }, []);
 
@@ -158,6 +172,7 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
       nombre: producto.nombre,
       precio: producto.precio,
       imagen: producto.imagen,
+      categoria: producto.categoria || "",
       ingredientesQuitados: [],
     });
   };
@@ -183,7 +198,7 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
             onClick={() => irASeccion(alitasRef)}
           >
             <span className="menu-nav-icon">🔥</span>
-            <span>Alitas</span>
+            <span>Alitas Y Boneless</span>
           </button>
 
           <button
@@ -192,6 +207,11 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
           >
             <span className="menu-nav-icon">🍟</span>
             <span>Combos</span>
+          </button>
+
+          <button className="menu-nav-btn" onClick={() => irASeccion(papasRef)}>
+            <span className="menu-nav-icon">🍟</span>
+            <span>Papas</span>
           </button>
 
           <button
@@ -272,7 +292,7 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
             ref={alitasRef}
             className="section-title wings-title menu-scroll-target"
           >
-            🔥 Alitas
+            🔥 Alitas Y Boneless
           </h2>
 
           <div className="cards-container">
@@ -305,6 +325,50 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
                     }}
                   >
                     {alita.disponible === false ? "Agotado" : "Ordenar"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* =================================
+              PAPAS
+          ================================= */}
+
+          <h2 ref={papasRef} className="section-title menu-scroll-target">
+            🍟 Papas
+          </h2>
+
+          <div className="cards-container">
+            {papas.map((papa) => (
+              <div
+                className={`food-card ${
+                  papa.disponible === false ? "producto-agotado" : ""
+                }`}
+                key={papa.id}
+              >
+                {papa.disponible === false && (
+                  <div className="letrero-agotado">AGOTADO</div>
+                )}
+
+                {papa.imagen && <img src={papa.imagen} alt={papa.nombre} />}
+
+                <div className="food-info">
+                  <h3>{papa.nombre}</h3>
+
+                  <p>{papa.descripcion}</p>
+
+                  <h4>${papa.precio}</h4>
+
+                  <button
+                    disabled={papa.disponible === false}
+                    onClick={() => {
+                      if (papa.disponible !== false) {
+                        agregarProductoSimple(papa);
+                      }
+                    }}
+                  >
+                    {papa.disponible === false ? "Agotado" : "Ordenar"}
                   </button>
                 </div>
               </div>
