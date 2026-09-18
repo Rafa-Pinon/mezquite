@@ -13,6 +13,8 @@ import {
   doc,
   onSnapshot,
   updateDoc,
+  writeBatch,
+  setDoc,
 } from "firebase/firestore";
 
 import { auth, db } from "../firebase";
@@ -45,6 +47,20 @@ function Admin() {
   const [productoEditando, setProductoEditando] = useState(null);
 
   const [mostrarNuevo, setMostrarNuevo] = useState(false);
+
+  // ========================================
+  // ORGANIZAR MENÚ
+  // ========================================
+  const CATEGORIAS_MENU = [
+    "hamburguesas",
+    "alitas",
+    "papas",
+    "combos",
+    "bebidas",
+  ];
+  const [ordenCategorias, setOrdenCategorias] = useState(CATEGORIAS_MENU);
+  const [ordenProductos, setOrdenProductos] = useState({});
+  const [guardandoOrdenMenu, setGuardandoOrdenMenu] = useState(false);
 
   const [nuevoProducto, setNuevoProducto] = useState({
     nombre: "",
@@ -113,6 +129,28 @@ function Admin() {
         }));
 
         setProductos(lista);
+
+        // Construir el orden local usando el campo "orden" guardado.
+        const agrupados = {};
+        CATEGORIAS_MENU.forEach((categoria) => {
+          agrupados[categoria] = lista
+            .filter((p) => p.categoria === categoria)
+            .sort((a, b) => {
+              const oa = Number.isFinite(Number(a.orden))
+                ? Number(a.orden)
+                : 999999;
+              const ob = Number.isFinite(Number(b.orden))
+                ? Number(b.orden)
+                : 999999;
+              if (oa !== ob) return oa - ob;
+              return String(a.nombre || "").localeCompare(
+                String(b.nombre || ""),
+                "es",
+              );
+            })
+            .map((p) => p.id);
+        });
+        setOrdenProductos(agrupados);
       },
       (error) => {
         console.error("Error al leer productos:", error);
@@ -567,6 +605,75 @@ function Admin() {
   };
 
   // ========================================
+  // FUNCIONES PARA ORGANIZAR EL MENÚ
+  // ========================================
+
+  const nombreCategoriaMenu = (categoria) => {
+    const nombres = {
+      hamburguesas: "🍔 Hamburguesas",
+      alitas: "🔥 Alitas",
+      papas: "🍟 Papas",
+      combos: "🍱 Combos",
+      bebidas: "🥤 Bebidas",
+    };
+    return nombres[categoria] || categoria;
+  };
+
+  const moverEnLista = (lista, indice, direccion) => {
+    const destino = indice + direccion;
+    if (destino < 0 || destino >= lista.length) return lista;
+
+    const copia = [...lista];
+    [copia[indice], copia[destino]] = [copia[destino], copia[indice]];
+    return copia;
+  };
+
+  const moverCategoria = (indice, direccion) => {
+    setOrdenCategorias((actual) => moverEnLista(actual, indice, direccion));
+  };
+
+  const moverProducto = (categoria, indice, direccion) => {
+    setOrdenProductos((actual) => ({
+      ...actual,
+      [categoria]: moverEnLista(actual[categoria] || [], indice, direccion),
+    }));
+  };
+
+  const productoPorId = (id) => productos.find((p) => p.id === id);
+
+  const guardarOrdenMenu = async () => {
+    try {
+      setGuardandoOrdenMenu(true);
+
+      const batch = writeBatch(db);
+
+      Object.entries(ordenProductos).forEach(([categoria, ids]) => {
+        ids.forEach((id, indice) => {
+          batch.update(doc(db, "productos", id), {
+            orden: indice,
+            categoria,
+          });
+        });
+      });
+
+      await batch.commit();
+
+      await setDoc(
+        doc(db, "configuracion", "negocio"),
+        { ordenCategorias },
+        { merge: true },
+      );
+
+      alert("✅ Orden del menú guardado correctamente.");
+    } catch (error) {
+      console.error("Error guardando el orden del menú:", error);
+      alert("No se pudo guardar el orden del menú.");
+    } finally {
+      setGuardandoOrdenMenu(false);
+    }
+  };
+
+  // ========================================
   // CARGANDO
   // ========================================
 
@@ -803,6 +910,120 @@ function Admin() {
         {/* =====================================
             PRODUCTOS
         ====================================== */}
+
+        <section className="organizador-menu-admin">
+          <div className="organizador-menu-titulo">
+            <div>
+              <h2>↕ Organizar menú</h2>
+              <p>
+                Usa las flechas para acomodar las secciones y los productos. El
+                cambio se refleja en clientes después de guardar.
+              </p>
+            </div>
+
+            <button
+              className="btn-guardar-orden-menu"
+              onClick={guardarOrdenMenu}
+              disabled={guardandoOrdenMenu}
+            >
+              {guardandoOrdenMenu ? "Guardando..." : "💾 Guardar orden"}
+            </button>
+          </div>
+
+          <div className="lista-categorias-organizador">
+            {ordenCategorias.map((categoria, indiceCategoria) => (
+              <div className="categoria-organizador" key={categoria}>
+                <div className="categoria-organizador-cabecera">
+                  <strong>
+                    <span className="numero-orden-admin">
+                      {indiceCategoria + 1}
+                    </span>
+                    {nombreCategoriaMenu(categoria)}
+                  </strong>
+
+                  <div className="botones-mover-admin">
+                    <button
+                      type="button"
+                      onClick={() => moverCategoria(indiceCategoria, -1)}
+                      disabled={indiceCategoria === 0}
+                      title="Subir sección"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moverCategoria(indiceCategoria, 1)}
+                      disabled={indiceCategoria === ordenCategorias.length - 1}
+                      title="Bajar sección"
+                    >
+                      ↓
+                    </button>
+                  </div>
+                </div>
+
+                <div className="productos-organizador">
+                  {(ordenProductos[categoria] || []).map(
+                    (id, indiceProducto) => {
+                      const producto = productoPorId(id);
+                      if (!producto) return null;
+
+                      return (
+                        <div className="producto-organizador" key={id}>
+                          <div className="producto-organizador-datos">
+                            {producto.imagen && (
+                              <img
+                                src={producto.imagen}
+                                alt={producto.nombre}
+                              />
+                            )}
+                            <span className="nombre-producto-organizador">
+                              <b className="numero-producto-admin">
+                                {indiceProducto + 1}
+                              </b>
+                              {producto.nombre}
+                            </span>
+                          </div>
+
+                          <div className="botones-mover-admin">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                moverProducto(categoria, indiceProducto, -1)
+                              }
+                              disabled={indiceProducto === 0}
+                              title="Subir producto"
+                            >
+                              ↑
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                moverProducto(categoria, indiceProducto, 1)
+                              }
+                              disabled={
+                                indiceProducto ===
+                                (ordenProductos[categoria] || []).length - 1
+                              }
+                              title="Bajar producto"
+                            >
+                              ↓
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    },
+                  )}
+
+                  {(ordenProductos[categoria] || []).length === 0 && (
+                    <p className="sin-productos-organizador">
+                      No hay productos en esta sección.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <h2>Productos</h2>
 

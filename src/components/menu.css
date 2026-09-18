@@ -446,3 +446,22 @@ body {
     scroll-margin-top: 300px;
   }
 }
+
+
+/* ========================================
+   ORDEN DINÁMICO DE SECCIONES DESDE ADMIN
+   IMPORTANTE: permite que CSS 'order' cambie
+   físicamente la posición visual de cada sección.
+======================================== */
+
+.menu-secciones-dinamicas {
+  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.menu-seccion-ordenable {
+  width: 100%;
+  display: block;
+  flex: 0 0 auto;
+}

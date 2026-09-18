@@ -23,7 +23,11 @@ const Menubebidas = ({ onComidasClick, onAgregarCarrito }) => {
           ...documento.data(),
         }));
 
-        setBebidas(lista);
+        setBebidas(
+          lista.sort(
+            (a, b) => Number(a.orden ?? 999999) - Number(b.orden ?? 999999),
+          ),
+        );
         setCargando(false);
       },
       (error) => {

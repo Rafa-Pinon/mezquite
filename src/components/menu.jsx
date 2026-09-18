@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./menu.css";
 
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 
 import { db } from "../firebase";
 
@@ -17,6 +17,13 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
   const [combos, setCombos] = useState([]);
   const [papas, setPapas] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [ordenCategorias, setOrdenCategorias] = useState([
+    "hamburguesas",
+    "alitas",
+    "papas",
+    "combos",
+    "bebidas",
+  ]);
 
   const hamburguesasRef = useRef(null);
   const alitasRef = useRef(null);
@@ -62,7 +69,11 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
           ...documento.data(),
         }));
 
-        setHamburguesas(lista);
+        setHamburguesas(
+          lista.sort(
+            (a, b) => Number(a.orden ?? 999999) - Number(b.orden ?? 999999),
+          ),
+        );
         setCargando(false);
       },
     );
@@ -73,7 +84,11 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
         ...documento.data(),
       }));
 
-      setAlitas(lista);
+      setAlitas(
+        lista.sort(
+          (a, b) => Number(a.orden ?? 999999) - Number(b.orden ?? 999999),
+        ),
+      );
     });
 
     const unsubscribeCombos = onSnapshot(consultaCombos, (snapshot) => {
@@ -82,7 +97,11 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
         ...documento.data(),
       }));
 
-      setCombos(lista);
+      setCombos(
+        lista.sort(
+          (a, b) => Number(a.orden ?? 999999) - Number(b.orden ?? 999999),
+        ),
+      );
     });
 
     const unsubscribePapas = onSnapshot(consultaPapas, (snapshot) => {
@@ -91,7 +110,11 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
         ...documento.data(),
       }));
 
-      setPapas(lista);
+      setPapas(
+        lista.sort(
+          (a, b) => Number(a.orden ?? 999999) - Number(b.orden ?? 999999),
+        ),
+      );
     });
 
     return () => {
@@ -101,6 +124,45 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
       unsubscribePapas();
     };
   }, []);
+
+  // =========================================
+  // ORDEN DE SECCIONES DESDE ADMIN
+  // =========================================
+
+  useEffect(() => {
+    const referenciaConfig = doc(db, "configuracion", "negocio");
+
+    const unsubscribeOrden = onSnapshot(referenciaConfig, (snapshot) => {
+      const datos = snapshot.data();
+
+      if (Array.isArray(datos?.ordenCategorias)) {
+        const categoriasValidas = [
+          "hamburguesas",
+          "alitas",
+          "papas",
+          "combos",
+          "bebidas",
+        ];
+
+        const guardadas = datos.ordenCategorias.filter((categoria) =>
+          categoriasValidas.includes(categoria),
+        );
+
+        const faltantes = categoriasValidas.filter(
+          (categoria) => !guardadas.includes(categoria),
+        );
+
+        setOrdenCategorias([...guardadas, ...faltantes]);
+      }
+    });
+
+    return () => unsubscribeOrden();
+  }, []);
+
+  const ordenCategoria = (categoria) => {
+    const indice = ordenCategorias.indexOf(categoria);
+    return indice === -1 ? 99 : indice;
+  };
 
   // =========================================
   // ABRIR HAMBURGUESA
@@ -187,6 +249,7 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
         <div className="menu-nav-buttons">
           <button
             className="menu-nav-btn"
+            style={{ order: ordenCategoria("hamburguesas") }}
             onClick={() => irASeccion(hamburguesasRef)}
           >
             <span className="menu-nav-icon">🍔</span>
@@ -195,6 +258,7 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
 
           <button
             className="menu-nav-btn"
+            style={{ order: ordenCategoria("alitas") }}
             onClick={() => irASeccion(alitasRef)}
           >
             <span className="menu-nav-icon">🔥</span>
@@ -203,19 +267,25 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
 
           <button
             className="menu-nav-btn"
+            style={{ order: ordenCategoria("combos") }}
             onClick={() => irASeccion(combosRef)}
           >
             <span className="menu-nav-icon">🍟</span>
             <span>Combos</span>
           </button>
 
-          <button className="menu-nav-btn" onClick={() => irASeccion(papasRef)}>
+          <button
+            className="menu-nav-btn"
+            style={{ order: ordenCategoria("papas") }}
+            onClick={() => irASeccion(papasRef)}
+          >
             <span className="menu-nav-icon">🍟</span>
             <span>Papas</span>
           </button>
 
           <button
             className="menu-nav-btn menu-nav-btn-bebidas"
+            style={{ order: ordenCategoria("bebidas") }}
             onClick={onBebidasClick}
           >
             <span className="menu-nav-icon">🥤</span>
@@ -227,201 +297,225 @@ const Home = ({ onBebidasClick, onAgregarCarrito }) => {
       {cargando ? (
         <p>Cargando menú...</p>
       ) : (
-        <>
-          {/* =================================
+        <div className="menu-secciones-dinamicas">
+          <div
+            className="menu-seccion-ordenable"
+            style={{ order: ordenCategoria("hamburguesas") }}
+          >
+            {/* =================================
               HAMBURGUESAS
           ================================= */}
 
-          <h2
-            ref={hamburguesasRef}
-            className="section-title menu-scroll-target"
-          >
-            🍔 Hamburguesas
-          </h2>
+            <h2
+              ref={hamburguesasRef}
+              className="section-title menu-scroll-target"
+            >
+              🍔 Hamburguesas
+            </h2>
 
-          <div className="cards-container">
-            {hamburguesas.map((hamburguesa) => (
-              <div
-                className={`food-card hamburguesa-card ${
-                  hamburguesa.disponible === false ? "producto-agotado" : ""
-                }`}
-                key={hamburguesa.id}
-                onClick={() => {
-                  if (hamburguesa.disponible !== false) {
-                    abrirProducto(hamburguesa);
-                  }
-                }}
-              >
-                {hamburguesa.disponible === false && (
-                  <div className="letrero-agotado">AGOTADO</div>
-                )}
+            <div className="cards-container">
+              {hamburguesas.map((hamburguesa) => (
+                <div
+                  className={`food-card hamburguesa-card ${
+                    hamburguesa.disponible === false ? "producto-agotado" : ""
+                  }`}
+                  key={hamburguesa.id}
+                  onClick={() => {
+                    if (hamburguesa.disponible !== false) {
+                      abrirProducto(hamburguesa);
+                    }
+                  }}
+                >
+                  {hamburguesa.disponible === false && (
+                    <div className="letrero-agotado">AGOTADO</div>
+                  )}
 
-                {hamburguesa.imagen && (
-                  <img src={hamburguesa.imagen} alt={hamburguesa.nombre} />
-                )}
+                  {hamburguesa.imagen && (
+                    <img src={hamburguesa.imagen} alt={hamburguesa.nombre} />
+                  )}
 
-                <div className="food-info">
-                  <h3>{hamburguesa.nombre}</h3>
+                  <div className="food-info">
+                    <h3>{hamburguesa.nombre}</h3>
 
-                  <p>{hamburguesa.descripcion}</p>
+                    <p>{hamburguesa.descripcion}</p>
 
-                  <h4>${hamburguesa.precio}</h4>
+                    <h4>${hamburguesa.precio}</h4>
 
-                  <button
-                    disabled={hamburguesa.disponible === false}
-                    onClick={(e) => {
-                      e.stopPropagation();
+                    <button
+                      disabled={hamburguesa.disponible === false}
+                      onClick={(e) => {
+                        e.stopPropagation();
 
-                      if (hamburguesa.disponible !== false) {
-                        abrirProducto(hamburguesa);
-                      }
-                    }}
-                  >
-                    {hamburguesa.disponible === false ? "Agotado" : "Ordenar"}
-                  </button>
+                        if (hamburguesa.disponible !== false) {
+                          abrirProducto(hamburguesa);
+                        }
+                      }}
+                    >
+                      {hamburguesa.disponible === false ? "Agotado" : "Ordenar"}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          {/* =================================
+          <div
+            className="menu-seccion-ordenable"
+            style={{ order: ordenCategoria("alitas") }}
+          >
+            {/* =================================
               ALITAS
           ================================= */}
 
-          <h2
-            ref={alitasRef}
-            className="section-title wings-title menu-scroll-target"
-          >
-            🔥 Alitas Y Boneless
-          </h2>
+            <h2
+              ref={alitasRef}
+              className="section-title wings-title menu-scroll-target"
+            >
+              🔥 Alitas Y Boneless
+            </h2>
 
-          <div className="cards-container">
-            {alitas.map((alita) => (
-              <div
-                className={`food-card ${
-                  alita.disponible === false ? "producto-agotado" : ""
-                }`}
-                key={alita.id}
-              >
-                {alita.disponible === false && (
-                  <div className="letrero-agotado">AGOTADO</div>
-                )}
+            <div className="cards-container">
+              {alitas.map((alita) => (
+                <div
+                  className={`food-card ${
+                    alita.disponible === false ? "producto-agotado" : ""
+                  }`}
+                  key={alita.id}
+                >
+                  {alita.disponible === false && (
+                    <div className="letrero-agotado">AGOTADO</div>
+                  )}
 
-                {alita.imagen && <img src={alita.imagen} alt={alita.nombre} />}
+                  {alita.imagen && (
+                    <img src={alita.imagen} alt={alita.nombre} />
+                  )}
 
-                <div className="food-info">
-                  <h3>{alita.nombre}</h3>
+                  <div className="food-info">
+                    <h3>{alita.nombre}</h3>
 
-                  <p>{alita.descripcion}</p>
+                    <p>{alita.descripcion}</p>
 
-                  <h4>${alita.precio}</h4>
+                    <h4>${alita.precio}</h4>
 
-                  <button
-                    disabled={alita.disponible === false}
-                    onClick={() => {
-                      if (alita.disponible !== false) {
-                        agregarProductoSimple(alita);
-                      }
-                    }}
-                  >
-                    {alita.disponible === false ? "Agotado" : "Ordenar"}
-                  </button>
+                    <button
+                      disabled={alita.disponible === false}
+                      onClick={() => {
+                        if (alita.disponible !== false) {
+                          agregarProductoSimple(alita);
+                        }
+                      }}
+                    >
+                      {alita.disponible === false ? "Agotado" : "Ordenar"}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          {/* =================================
+          <div
+            className="menu-seccion-ordenable"
+            style={{ order: ordenCategoria("papas") }}
+          >
+            {/* =================================
               PAPAS
           ================================= */}
 
-          <h2 ref={papasRef} className="section-title menu-scroll-target">
-            🍟 Papas
-          </h2>
+            <h2 ref={papasRef} className="section-title menu-scroll-target">
+              🍟 Papas
+            </h2>
 
-          <div className="cards-container">
-            {papas.map((papa) => (
-              <div
-                className={`food-card ${
-                  papa.disponible === false ? "producto-agotado" : ""
-                }`}
-                key={papa.id}
-              >
-                {papa.disponible === false && (
-                  <div className="letrero-agotado">AGOTADO</div>
-                )}
+            <div className="cards-container">
+              {papas.map((papa) => (
+                <div
+                  className={`food-card ${
+                    papa.disponible === false ? "producto-agotado" : ""
+                  }`}
+                  key={papa.id}
+                >
+                  {papa.disponible === false && (
+                    <div className="letrero-agotado">AGOTADO</div>
+                  )}
 
-                {papa.imagen && <img src={papa.imagen} alt={papa.nombre} />}
+                  {papa.imagen && <img src={papa.imagen} alt={papa.nombre} />}
 
-                <div className="food-info">
-                  <h3>{papa.nombre}</h3>
+                  <div className="food-info">
+                    <h3>{papa.nombre}</h3>
 
-                  <p>{papa.descripcion}</p>
+                    <p>{papa.descripcion}</p>
 
-                  <h4>${papa.precio}</h4>
+                    <h4>${papa.precio}</h4>
 
-                  <button
-                    disabled={papa.disponible === false}
-                    onClick={() => {
-                      if (papa.disponible !== false) {
-                        agregarProductoSimple(papa);
-                      }
-                    }}
-                  >
-                    {papa.disponible === false ? "Agotado" : "Ordenar"}
-                  </button>
+                    <button
+                      disabled={papa.disponible === false}
+                      onClick={() => {
+                        if (papa.disponible !== false) {
+                          agregarProductoSimple(papa);
+                        }
+                      }}
+                    >
+                      {papa.disponible === false ? "Agotado" : "Ordenar"}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          {/* =================================
+          <div
+            className="menu-seccion-ordenable"
+            style={{ order: ordenCategoria("combos") }}
+          >
+            {/* =================================
               COMBOS
           ================================= */}
 
-          <h2
-            ref={combosRef}
-            className="section-title wings-title menu-scroll-target"
-          >
-            🍟 Combos
-          </h2>
+            <h2
+              ref={combosRef}
+              className="section-title wings-title menu-scroll-target"
+            >
+              🍟 Combos
+            </h2>
 
-          <div className="cards-container">
-            {combos.map((combo) => (
-              <div
-                className={`food-card ${
-                  combo.disponible === false ? "producto-agotado" : ""
-                }`}
-                key={combo.id}
-              >
-                {combo.disponible === false && (
-                  <div className="letrero-agotado">AGOTADO</div>
-                )}
+            <div className="cards-container">
+              {combos.map((combo) => (
+                <div
+                  className={`food-card ${
+                    combo.disponible === false ? "producto-agotado" : ""
+                  }`}
+                  key={combo.id}
+                >
+                  {combo.disponible === false && (
+                    <div className="letrero-agotado">AGOTADO</div>
+                  )}
 
-                {combo.imagen && <img src={combo.imagen} alt={combo.nombre} />}
+                  {combo.imagen && (
+                    <img src={combo.imagen} alt={combo.nombre} />
+                  )}
 
-                <div className="food-info">
-                  <h3>{combo.nombre}</h3>
+                  <div className="food-info">
+                    <h3>{combo.nombre}</h3>
 
-                  <p>{combo.descripcion}</p>
+                    <p>{combo.descripcion}</p>
 
-                  <h4>${combo.precio}</h4>
+                    <h4>${combo.precio}</h4>
 
-                  <button
-                    disabled={combo.disponible === false}
-                    onClick={() => {
-                      if (combo.disponible !== false) {
-                        agregarProductoSimple(combo);
-                      }
-                    }}
-                  >
-                    {combo.disponible === false ? "Agotado" : "Ordenar"}
-                  </button>
+                    <button
+                      disabled={combo.disponible === false}
+                      onClick={() => {
+                        if (combo.disponible !== false) {
+                          agregarProductoSimple(combo);
+                        }
+                      }}
+                    >
+                      {combo.disponible === false ? "Agotado" : "Ordenar"}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* =====================================
